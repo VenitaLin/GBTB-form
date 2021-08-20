@@ -21,7 +21,11 @@ export default class GbtbFormWebPart extends BaseClientSideWebPart<IGbtbFormWebP
     const element: React.ReactElement<IGbtbFormProps> = React.createElement(
       GbtbForm,
       {
-        description: this.properties.description
+        description: this.properties.description,
+        spHttpClient: this.context.spHttpClient,
+        siteUrl: this.context.pageContext.web.absoluteUrl,
+        listName: "GBTB%20Booking%20Form", //set the SharePoint List Name
+        context: this.context,
       }
     );
 
