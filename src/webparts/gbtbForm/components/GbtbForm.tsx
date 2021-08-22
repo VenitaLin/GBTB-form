@@ -32,15 +32,7 @@ export default class GbtbForm extends React.Component<
           <div className={styles.item}>
                 <label>
                   <p>Full name (as per NRIC)</p>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={this.state.fullName}
-                    onChange={this.handleChange}
-                    placeholder="Full Name (as per NRIC)"
-                    required
-                  ></input>
-                  {/* <PeoplePicker
+                  <PeoplePicker
                           context={this.props.context}
                           required={true}
                           onChange={this.handleFullNameChange}
@@ -49,7 +41,7 @@ export default class GbtbForm extends React.Component<
                           resolveDelay={1000}
                           placeholder="Full Name (as per NRIC)"
                           // ref={(c) => (this.pplStaffName = c)}
-                        /> */}
+                        />
                 </label>
               </div>
               <div className={styles.item}>
