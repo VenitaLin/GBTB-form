@@ -3,7 +3,7 @@ export interface IGbtbFormState {
   fullName: string;
   division: string;
   department: string;
-  IDOV: string;
+  IDOV: Date;
   msg: any;
 }
 
@@ -12,6 +12,6 @@ export const initialSate = {
   fullName: '',
   division: '',
   department: '',
-  IDOV: '',
+  IDOV: new Date(),
   msg: '',
 };

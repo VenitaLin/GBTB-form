@@ -2,13 +2,12 @@ import * as React from "react";
 import styles from "./GbtbForm.module.scss";
 import { IGbtbFormProps } from "./IGbtbFormProps";
 import { IGbtbFormState, initialSate } from "./IGbtbFormState";
-import {
-  PeoplePicker,
-  PrincipalType,
-} from "@pnp/spfx-controls-react/lib/PeoplePicker";
 import * as formData from "./GbtbFormData";
 import * as Utils from "../utils";
 import * as App from "./GbtbFormApp";
+import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
+import DateFnsUtils from "@date-io/date-fns";
+import { addDays } from "date-fns";
 
 export default class GbtbForm extends React.Component<
   IGbtbFormProps,
@@ -29,89 +28,93 @@ export default class GbtbForm extends React.Component<
             <h2>Gardens By The Bay Booking Form</h2>
           </div>
           <form id="GbtbForm" ref={(el) => (this.myFormRef = el)}>
-          <div className={styles.item}>
-                <label>
-                  <p>Full name (as per NRIC)</p>
-                  <PeoplePicker
-                          context={this.props.context}
-                          required={true}
-                          onChange={this.handleFullNameChange}
-                          showHiddenInUI={false}
-                          principalTypes={[PrincipalType.User]}
-                          resolveDelay={1000}
-                          placeholder="Full Name (as per NRIC)"
-                          // ref={(c) => (this.pplStaffName = c)}
-                        />
-                </label>
-              </div>
-              <div className={styles.item}>
-                <label>
-                  <p>Division</p>
-                  <select
-                    name="division"
-                    value={this.state.division}
-                    onChange={this.handleChange}
-                    required
-                  >
-                    <option value="" hidden>
-                      Choose an item
+            <div className={styles.item}>
+              <label>
+                <p>Full name (as per NRIC)</p>
+                <input
+                  name="fullName"
+                  required={true}
+                  onChange={this.handleChange}
+                  placeholder="Full Name (as per NRIC)"
+                />
+              </label>
+            </div>
+            <div className={styles.item}>
+              <label>
+                <p>Division</p>
+                <select
+                  name="division"
+                  value={this.state.division}
+                  onChange={this.handleChange}
+                  required
+                >
+                  <option value="" hidden>
+                    Choose an item
+                  </option>
+                  {formData.divisions.map((division, index) => (
+                    <option key={index} value={division}>
+                      {division}
                     </option>
-                    {formData.divisions.map((division, index) => (
-                      <option key={index} value={division}>
-                        {division}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <div className={styles.item}>
-                <label>
-                  <p>Department</p>
-                  <select
-                    name="department"
-                    value={this.state.department}
-                    onChange={this.handleChange}
-                    required
-                  >
-                    <option value="" hidden>
-                      Choose an item
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className={styles.item}>
+              <label>
+                <p>Department</p>
+                <select
+                  name="department"
+                  value={this.state.department}
+                  onChange={this.handleChange}
+                  required
+                >
+                  <option value="" hidden>
+                    Choose an item
+                  </option>
+                  {formData.departments.map((department, index) => (
+                    <option key={index} value={department}>
+                      {department}
                     </option>
-                    {formData.departments.map((department, index) => (
-                      <option key={index} value={department}>
-                        {department}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-              <div className={styles.item}>
-                <label>
-                  <p>Intended Date of Visit</p>
-                  <input
-                    type="date"
-                    name="IDOV"
-                    placeholder="Intended Date of Visit"
-                    onChange={this.handleChange}
-                  ></input>
-                </label>
-              </div>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className={styles.item}>
+              <label>
+                <p>Intended Date of Visit</p>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <DatePicker
+                    value={this.state.IDOV}
+                    onChange={this.handleDateChange}
+                    autoOk
+                    orientation="landscape"
+                    variant="static"
+                    openTo="date"
+                    disablePast={true}
+                    maxDate={addDays(new Date(), 13)}
+                    disableToolbar={false}
+                    initialFocusedDate={new Date()}
+                  />
+              </MuiPickersUtilsProvider>
+              </label>
+            </div>
             <div className={styles.item}>
               <p>
                 <div className={styles.buttonItem}>
                   <button
-                      type="submit"
-                      className={styles.button}
-                      onClick={(e) => this.handleSubmit(e)}
-                    >
-                      Submit
-                    </button>
-                    <button
-                      type="reset"
-                      className={styles.button}
-                      onClick={this.resetForm}
-                    >
-                      Reset
-                    </button>
+                    type="submit"
+                    className={styles.button}
+                    onClick={(e) => this.handleSubmit(e)}
+                  >
+                    Submit
+                  </button>
+                  <button
+                    type="reset"
+                    className={styles.button}
+                    onClick={this.resetForm}
+                  >
+                    Reset
+                  </button>
                 </div>
               </p>
             </div>
@@ -133,13 +136,14 @@ export default class GbtbForm extends React.Component<
     );
   };
 
-  private handleFullNameChange = (items: any[]) => {
-    if (items && items.length > 0) {
-      this.setState({
-        fullName: items[0].text,
-      });
-    }
-  };
+  private handleDateChange = (date) => {
+    this.setState(
+      {
+        ...this.state,
+        IDOV: date
+      }
+    )
+  }
 
   private resetForm = (e) => {
     this.myFormRef.reset();
