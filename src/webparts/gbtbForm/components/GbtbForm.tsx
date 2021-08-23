@@ -5,9 +5,7 @@ import { IGbtbFormState, initialSate } from "./IGbtbFormState";
 import * as formData from "./GbtbFormData";
 import * as Utils from "../utils";
 import * as App from "./GbtbFormApp";
-import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
-import DateFnsUtils from "@date-io/date-fns";
-import { addDays } from "date-fns";
+import { DateTimePicker, DateConvention } from '@pnp/spfx-controls-react/lib/DateTimePicker';
 
 export default class GbtbForm extends React.Component<
   IGbtbFormProps,
@@ -82,20 +80,13 @@ export default class GbtbForm extends React.Component<
             <div className={styles.item}>
               <label>
                 <p>Intended Date of Visit</p>
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                  <DatePicker
-                    value={this.state.IDOV}
-                    onChange={this.handleDateChange}
-                    autoOk
-                    orientation="landscape"
-                    variant="static"
-                    openTo="date"
-                    disablePast={true}
-                    maxDate={addDays(new Date(), 13)}
-                    disableToolbar={false}
-                    initialFocusedDate={new Date()}
-                  />
-              </MuiPickersUtilsProvider>
+                <DateTimePicker
+                  dateConvention={DateConvention.Date}
+                  formatDate={(date: Date) => date.toLocaleDateString()}
+                  showLabels={false}
+                  value={this.state.IDOV}
+                  onChange={this.handleDateChange}
+                />
               </label>
             </div>
             <div className={styles.item}>
