@@ -13,10 +13,15 @@ export const validateForm = (props) => {
 export const setFormProps = (props) => {
   let _spForm = {
     Title: props.fullName,
-    fullName: props.fullName,
     division: props.division,
     department: props.department,
     IDOV: props.IDOV,
   };
   return _spForm;
 };
+
+export const addDays = (date, days) => {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}

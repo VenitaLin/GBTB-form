@@ -6,6 +6,7 @@ import * as formData from "./GbtbFormData";
 import * as Utils from "../utils";
 import * as App from "./GbtbFormApp";
 import { DateTimePicker, DateConvention } from '@pnp/spfx-controls-react/lib/DateTimePicker';
+import { ListPicker } from "@pnp/spfx-controls-react/lib/ListPicker";
 
 export default class GbtbForm extends React.Component<
   IGbtbFormProps,
@@ -86,6 +87,7 @@ export default class GbtbForm extends React.Component<
                   showLabels={false}
                   value={this.state.IDOV}
                   onChange={this.handleDateChange}
+                  minDate={App.addDays(new Date(), 13)}
                 />
               </label>
             </div>

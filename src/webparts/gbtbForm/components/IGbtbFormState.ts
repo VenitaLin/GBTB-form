@@ -1,3 +1,5 @@
+import * as App from "./GbtbFormApp";
+
 export interface IGbtbFormState {
   status: string;
   fullName: string;
@@ -12,6 +14,6 @@ export const initialSate = {
   fullName: '',
   division: '',
   department: '',
-  IDOV: new Date(),
+  IDOV: App.addDays(new Date(), 13),
   msg: '',
 };

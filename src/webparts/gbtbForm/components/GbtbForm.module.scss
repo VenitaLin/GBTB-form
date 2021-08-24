@@ -55,13 +55,13 @@
     cursor: pointer;
     display: inline-block;
     padding: 0 16px;
-    border-radius: 3px;
+    // border-radius: 3px;
   }
 
   input,
   select {
     text-decoration: none;
-    height: 40px;
+    // height: 40px;
     background-color: $ms-color-white;
     color: $ms-color-black;
     position: relative;
@@ -74,7 +74,7 @@
     border-color: #666;
     display: inline-block;
     padding: 0 8px;
-    border-radius: 3px;
+    // border-radius: 3px;
   }
 
   .label {
