@@ -1,209 +1,154 @@
 import * as React from "react";
 import styles from "./GbtbForm.module.scss";
-import { IGbtbFormProps } from "./IGbtbFormProps";
-import { IGbtbFormState, initialSate } from "./IGbtbFormState";
-import * as formData from "./GbtbFormData";
-import * as Utils from "../utils";
 import * as App from "./GbtbFormApp";
-import { DateTimePicker, DateConvention } from '@pnp/spfx-controls-react/lib/DateTimePicker';
-import { ListPicker } from "@pnp/spfx-controls-react/lib/ListPicker";
+import {
+  DateTimePicker,
+  DateConvention,
+} from "@pnp/spfx-controls-react/lib/DateTimePicker";
+import { useState } from "react";
+import {
+  Dropdown,
+  IDropdownStyles,
+  TextField,
+} from "office-ui-fabric-react/lib";
 
-export default class GbtbForm extends React.Component<
-  IGbtbFormProps,
-  IGbtbFormState
-> {
-  constructor(props: IGbtbFormProps, state: IGbtbFormState) {
-    super(props);
-    this.state = {
-      ...initialSate,
+export const GbtbForm = (props) => {
+  let myFormRef;
+  const [status, setStatus] = useState("ready");
+  const [fullName, setFullName] = useState("");
+  const [division, setDivision] = useState(null);
+  const [department, setDepartment] = useState(null);
+  const [IDOV, setIDOV] = useState(App.addDays(new Date(), 13));
+  const [divisionList, setDivisionList] = useState([]);
+  const [departmentList, setDepartmentList] = useState([]);
+
+  const dropdownStyles: Partial<IDropdownStyles> = {
+    dropdownItemsWrapper: { maxHeight: "300px" },
+  };
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setStatus("loading");
+        const divResult = await App.getList(props.siteDetails, "Division");
+        setDivisionList(App.formatDropList(divResult));
+        const depResult = await App.getList(props.siteDetails, "Department");
+        setDepartmentList(App.formatDropList(depResult));
+        setStatus("ready");
+      } catch (e) {
+        console.log(e);
+        setStatus("error");
+      }
     };
-  }
-  protected myFormRef;
-  public render(): React.ReactElement<IGbtbFormProps> {
-    return (
-      <div className={styles.gbtbForm}>
-        <div className={styles.container}>
-          <div className={styles.title}>
-            <h2>Gardens By The Bay Booking Form</h2>
-          </div>
-          <form id="GbtbForm" ref={(el) => (this.myFormRef = el)}>
-            <div className={styles.item}>
-              <label>
-                <p>Full name (as per NRIC)</p>
-                <input
-                  name="fullName"
-                  required={true}
-                  onChange={this.handleChange}
-                  placeholder="Full Name (as per NRIC)"
-                />
-              </label>
-            </div>
-            <div className={styles.item}>
-              <label>
-                <p>Division</p>
-                <select
-                  name="division"
-                  value={this.state.division}
-                  onChange={this.handleChange}
-                  required
-                >
-                  <option value="" hidden>
-                    Choose an item
-                  </option>
-                  {formData.divisions.map((division, index) => (
-                    <option key={index} value={division}>
-                      {division}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div className={styles.item}>
-              <label>
-                <p>Department</p>
-                <select
-                  name="department"
-                  value={this.state.department}
-                  onChange={this.handleChange}
-                  required
-                >
-                  <option value="" hidden>
-                    Choose an item
-                  </option>
-                  {formData.departments.map((department, index) => (
-                    <option key={index} value={department}>
-                      {department}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div className={styles.item}>
-              <label>
-                <p>Intended Date of Visit</p>
-                <DateTimePicker
-                  dateConvention={DateConvention.Date}
-                  formatDate={(date: Date) => date.toLocaleDateString()}
-                  showLabels={false}
-                  value={this.state.IDOV}
-                  onChange={this.handleDateChange}
-                  minDate={App.addDays(new Date(), 13)}
-                />
-              </label>
-            </div>
-            <div className={styles.item}>
-              <p>
-                <div className={styles.buttonItem}>
-                  <button
-                    type="submit"
-                    className={styles.button}
-                    onClick={(e) => this.handleSubmit(e)}
-                  >
-                    Submit
-                  </button>
-                  <button
-                    type="reset"
-                    className={styles.button}
-                    onClick={this.resetForm}
-                  >
-                    Reset
-                  </button>
-                </div>
-              </p>
-            </div>
-          </form>
+    fetchData();
+  }, []);
+
+  const resetForm = (e) => {
+    setFullName("");
+    setDivision(null);
+    setDepartment(null);
+    setIDOV(App.addDays(new Date(), 13));
+  };
+
+  const submitForm = () => {
+    const data = {
+      fullName: fullName,
+      division: divisionList[division].text,
+      department: departmentList[department].text,
+      IDOV: IDOV,
+    };
+    App.createForm(props.siteDetails, data).then(value => {
+      alert("Form submitted successfully!");
+      resetForm;
+    }, reason => {
+      console.log(reason);
+      alert("Form submitted failed.");
+    });
+  };
+
+  return (
+    <div className={styles.gbtbForm}>
+      <div className={styles.container}>
+        <div className={styles.title}>
+          <h2>Gardens By The Bay Booking Form</h2>
         </div>
+        <form id="GbtbForm" ref={(el) => (myFormRef = el)}>
+          <div className={styles.item}>
+            <TextField
+              label="Full name (as per NRIC)"
+              value={fullName}
+              required
+              placeholder="Full Name (as per NRIC)"
+              onChange={(e, newValue) => {
+                setFullName(newValue);
+              }}
+            />
+          </div>
+          <div className={styles.item}>
+            <label>
+              <p>Division</p>
+              <Dropdown
+                options={divisionList}
+                selectedKey={division}
+                placeholder="Select your division"
+                onChange={(e, selectedOption) => {
+                  setDivision(selectedOption.key);
+                }}
+                styles={dropdownStyles}
+              ></Dropdown>
+            </label>
+          </div>
+          <div className={styles.item}>
+            <label>
+              <p>Department</p>
+              <Dropdown
+                options={departmentList}
+                selectedKey={department}
+                placeholder="Select your department"
+                onChange={(e, selectedOption) => {
+                  setDepartment(selectedOption.key);
+                }}
+                styles={dropdownStyles}
+              ></Dropdown>
+            </label>
+          </div>
+          <div className={styles.item}>
+            <label>
+              <p>Intended Date of Visit</p>
+              <DateTimePicker
+                dateConvention={DateConvention.Date}
+                formatDate={(date: Date) => date.toLocaleDateString()}
+                showLabels={false}
+                value={IDOV}
+                placeholder="Please select a date"
+                onChange={(date) => setIDOV(date)}
+                minDate={App.addDays(new Date(), 13)}
+                maxDate={App.addDays(new Date(), 90)}
+              />
+            </label>
+          </div>
+          <div className={styles.item}>
+            <p>
+              <div className={styles.buttonItem}>
+                <button
+                  type="button"
+                  className={styles.button}
+                  onClick={submitForm}
+                >
+                  Submit
+                </button>
+                <button
+                  type="reset"
+                  className={styles.button}
+                  onClick={resetForm}
+                >
+                  Reset
+                </button>
+              </div>
+            </p>
+          </div>
+        </form>
       </div>
-    );
-  }
-
-  private handleChange = (e) => {
-    this.setState(
-      {
-        ...this.state,
-        [e.target.name]: e.target.value,
-      },
-      function () {
-        console.log(this.state);
-      }
-    );
-  };
-
-  private handleDateChange = (date) => {
-    this.setState(
-      {
-        ...this.state,
-        IDOV: date
-      }
-    )
-  }
-
-  private resetForm = (e) => {
-    this.myFormRef.reset();
-    this.setState({
-      ...initialSate,
-    });
-  };
-
-  private createForm = () => {
-    this.setState({
-      status: "Creating item...",
-    });
-
-    let uri =
-      this.props.siteUrl +
-      "/_api/web/lists/getbytitle('" +
-      this.props.listName +
-      "')/items";
-
-    this.setState({}, function () {
-      let _spForm = App.setFormProps(this.state);
-      Utils.postData(
-        this.props.spHttpClient,
-        uri,
-        JSON.stringify(_spForm)
-      ).then((response) => {
-        if (response.status === 201) {
-          this.resetForm();
-          alert("Form submitted successfully!");
-        } else {
-          this.setState({
-            msg: {
-              error: "Form submission failed.",
-            },
-          });
-        }
-      });
-    });
-  };
-
-  private handleValidation = () => {
-    if (!App.validateForm(this.state)) {
-      this.setState({
-        status: "Invalid form",
-        msg: { error: "Please fill up the required fields." },
-      });
-      return false;
-    } else {
-      this.setState({
-        status: "Valid form!",
-        msg: { error: "" },
-      });
-      return true;
-    }
-  };
-
-  private handleSubmit = (e) => {
-    e.preventDefault();
-    this.setState(
-      {
-        status: "Validating form...",
-      },
-      function () {
-        if (this.handleValidation()) {
-          this.createForm();
-        }
-      }
-    );
-  };
-}
+    </div>
+  );
+};

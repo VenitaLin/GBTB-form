@@ -12,12 +12,26 @@ export async function postData(
   const spOpts: ISPHttpClientOptions = {
     body: sppayload,
   };
-
   let resp: SPHttpClientResponse = await client.post(
     url,
     SPHttpClient.configurations.v1,
     spOpts
   );
-  // let json = resp.json();
+  return resp;
+}
+
+export async function getData(
+  client: SPHttpClient,
+  url: string,
+  sppayload: any
+): Promise<any> {
+  const spOpts: ISPHttpClientOptions = {
+    body: sppayload,
+  };
+  let resp: SPHttpClientResponse = await client.get(
+    url,
+    SPHttpClient.configurations.v1,
+    spOpts
+  );
   return resp;
 }

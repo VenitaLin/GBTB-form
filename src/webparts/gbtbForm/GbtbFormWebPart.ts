@@ -6,11 +6,8 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-
 import * as strings from 'GbtbFormWebPartStrings';
-import GbtbForm from './components/GbtbForm';
-import { IGbtbFormProps } from './components/IGbtbFormProps';
-
+import HomePage from './components/GbtbHome';
 export interface IGbtbFormWebPartProps {
   description: string;
 }
@@ -18,13 +15,15 @@ export interface IGbtbFormWebPartProps {
 export default class GbtbFormWebPart extends BaseClientSideWebPart<IGbtbFormWebPartProps> {
 
   public render(): void {
-    const element: React.ReactElement<IGbtbFormProps> = React.createElement(
-      GbtbForm,
+    const element: React.ReactElement<{}> = React.createElement(
+      HomePage,
       {
         description: this.properties.description,
         spHttpClient: this.context.spHttpClient,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        listName: "GBTB%20Booking%20Form", //set the SharePoint List Name
+        formListName: "GBTB%20Booking%20Form", //set the Form List Name
+        divisionListName: "Division",
+        departmentListName: "",
         context: this.context,
       }
     );
