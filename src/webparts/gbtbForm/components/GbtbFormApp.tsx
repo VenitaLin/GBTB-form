@@ -69,3 +69,7 @@ export const formatDropList = (data) => {
   }
   return listItems;
 }
+
+export const getUser = (siteDetails) => {
+  console.log( siteDetails.context.pageContext);
+}

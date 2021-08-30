@@ -22,8 +22,8 @@ export default class GbtbFormWebPart extends BaseClientSideWebPart<IGbtbFormWebP
         spHttpClient: this.context.spHttpClient,
         siteUrl: this.context.pageContext.web.absoluteUrl,
         formListName: "GBTB%20Booking%20Form", //set the Form List Name
-        divisionListName: "Division",
-        departmentListName: "",
+        divisionListName: "Division",//set the division List Name
+        departmentListName: "Department",//set the department List Name
         context: this.context,
       }
     );

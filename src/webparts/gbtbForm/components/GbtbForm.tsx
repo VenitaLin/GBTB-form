@@ -30,9 +30,9 @@ export const GbtbForm = (props) => {
     const fetchData = async () => {
       try {
         setStatus("loading");
-        const divResult = await App.getList(props.siteDetails, "Division");
+        const divResult = await App.getList(props.siteDetails, props.siteDetails.divisionListName);
         setDivisionList(App.formatDropList(divResult));
-        const depResult = await App.getList(props.siteDetails, "Department");
+        const depResult = await App.getList(props.siteDetails, props.siteDetails.departmentListName);
         setDepartmentList(App.formatDropList(depResult));
         setStatus("ready");
       } catch (e) {
@@ -41,6 +41,7 @@ export const GbtbForm = (props) => {
       }
     };
     fetchData();
+    App.getUser(props.siteDetails);
   }, []);
 
   const resetForm = (e) => {
