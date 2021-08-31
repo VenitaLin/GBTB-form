@@ -1,16 +1,61 @@
 import * as React from "react";
 import styles from "./GbtbForm.module.scss";
 import * as App from "./GbtbFormApp";
-import {
-  DateTimePicker,
-  DateConvention,
-} from "@pnp/spfx-controls-react/lib/DateTimePicker";
 import { useState } from "react";
 import {
   Dropdown,
   IDropdownStyles,
   TextField,
 } from "office-ui-fabric-react/lib";
+import { Calendar } from "office-ui-fabric-react/lib/Calendar";
+import { Label } from "office-ui-fabric-react/lib/Label";
+
+const DayPickerStrings = {
+  months: [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ],
+
+  shortMonths: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ],
+
+  days: [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ],
+
+  shortDays: ["S", "M", "T", "W", "T", "F", "S"],
+
+  goToToday: "Go to today",
+  weekNumberFormatString: "Week number {0}",
+};
 
 export const GbtbForm = (props) => {
   let myFormRef;
@@ -30,9 +75,15 @@ export const GbtbForm = (props) => {
     const fetchData = async () => {
       try {
         setStatus("loading");
-        const divResult = await App.getList(props.siteDetails, props.siteDetails.divisionListName);
+        const divResult = await App.getList(
+          props.siteDetails,
+          props.siteDetails.divisionListName
+        );
         setDivisionList(App.formatDropList(divResult));
-        const depResult = await App.getList(props.siteDetails, props.siteDetails.departmentListName);
+        const depResult = await App.getList(
+          props.siteDetails,
+          props.siteDetails.departmentListName
+        );
         setDepartmentList(App.formatDropList(depResult));
         setStatus("ready");
       } catch (e) {
@@ -41,7 +92,7 @@ export const GbtbForm = (props) => {
       }
     };
     fetchData();
-    App.getUser(props.siteDetails);
+    // App.getUser(props.siteDetails);
   }, []);
 
   const resetForm = (e) => {
@@ -58,13 +109,16 @@ export const GbtbForm = (props) => {
       department: departmentList[department].text,
       IDOV: IDOV,
     };
-    App.createForm(props.siteDetails, data).then(value => {
-      alert("Form submitted successfully!");
-      resetForm;
-    }, reason => {
-      console.log(reason);
-      alert("Form submitted failed.");
-    });
+    App.createForm(props.siteDetails, data).then(
+      (value) => {
+        alert("Form submitted successfully!");
+        resetForm;
+      },
+      (reason) => {
+        console.log(reason);
+        alert("Form submitted failed.");
+      }
+    );
   };
 
   return (
@@ -87,8 +141,8 @@ export const GbtbForm = (props) => {
           </div>
           <div className={styles.item}>
             <label>
-              <p>Division</p>
               <Dropdown
+                label="Division"
                 options={divisionList}
                 selectedKey={division}
                 placeholder="Select your division"
@@ -96,13 +150,14 @@ export const GbtbForm = (props) => {
                   setDivision(selectedOption.key);
                 }}
                 styles={dropdownStyles}
+                required
               ></Dropdown>
             </label>
           </div>
           <div className={styles.item}>
             <label>
-              <p>Department</p>
               <Dropdown
+                label="Department"
                 options={departmentList}
                 selectedKey={department}
                 placeholder="Select your department"
@@ -110,19 +165,20 @@ export const GbtbForm = (props) => {
                   setDepartment(selectedOption.key);
                 }}
                 styles={dropdownStyles}
+                required
               ></Dropdown>
             </label>
           </div>
           <div className={styles.item}>
             <label>
-              <p>Intended Date of Visit</p>
-              <DateTimePicker
-                dateConvention={DateConvention.Date}
-                formatDate={(date: Date) => date.toLocaleDateString()}
-                showLabels={false}
+              <Label required>Intended Date of Visit</Label>
+              <Calendar
+                onSelectDate={setIDOV}
+                isMonthPickerVisible={true}
+                showGoToToday={false}
                 value={IDOV}
-                placeholder="Please select a date"
-                onChange={(date) => setIDOV(date)}
+                strings={DayPickerStrings}
+                highlightSelectedMonth={true}
                 minDate={App.addDays(new Date(), 13)}
                 maxDate={App.addDays(new Date(), 90)}
               />

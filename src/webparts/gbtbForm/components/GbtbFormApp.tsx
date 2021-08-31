@@ -71,5 +71,5 @@ export const formatDropList = (data) => {
 }
 
 export const getUser = (siteDetails) => {
-  console.log( siteDetails.context.pageContext);
+  console.log( siteDetails.context.pageContext.userId);
 }
