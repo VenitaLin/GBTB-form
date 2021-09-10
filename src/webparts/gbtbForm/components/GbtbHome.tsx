@@ -1,43 +1,36 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import styles from "./GbtbForm.module.scss";
-import {GbtbForm} from './GbtbForm';
+import { GbtbForm } from "./GbtbForm";
 import * as App from "./GbtbFormApp";
-// type MyProps = { ... };
-type MyState = { date: Date};
+import { Bookings } from "./GbtbBookings";
+import { useState, useEffect } from "react";
+import { sp } from "@pnp/sp";
 
-export default class HomePage extends React.Component <{}, MyState> {
-    timerID: number;
-    constructor(props) {
-      super(props);
-      this.state = {
-          date: new Date()
-        };
-    }
-  
-    componentDidMount() {
-      this.timerID = setInterval(
-        () => this.tick(),
-        1000
-      );
-    }
-  
-    tick() {
-      this.setState({
-        date: new Date()
-      });
-    }
-  
-    render() {
-      return (
-        <div>
-          <h1>Hello, world!</h1>
-          <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
-            <GbtbForm siteDetails={this.props}/>
-        </div>
-      );
-    }
-  }
-  
+export const HomePage = (props) => {
+  const [bookings, setBookings] = useState([]);
+  const [status, setStatus] = useState("ready");
 
-  
+  useEffect(() => {
+    sp.setup({
+      spfxContext: props.context,
+    });
+    const fetchData = async () => {
+      try {
+        setStatus("loading");
+        let bookingsList = await App.getBookings(props.GbtbListName);
+        setBookings(bookingsList);
+        setStatus("ready");
+      } catch (e) {
+        setStatus("error");
+      }
+    };
+    fetchData();
+  }, []);
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <h2>{status}</h2>
+      <Bookings bookings={bookings}/>
+      <GbtbForm siteDetails={props} />
+    </div>
+  );
+};

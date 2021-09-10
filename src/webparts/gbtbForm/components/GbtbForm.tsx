@@ -1,7 +1,7 @@
 import * as React from "react";
 import styles from "./GbtbForm.module.scss";
 import * as App from "./GbtbFormApp";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dropdown,
   IDropdownStyles,
@@ -9,6 +9,7 @@ import {
 } from "office-ui-fabric-react/lib";
 import { Calendar } from "office-ui-fabric-react/lib/Calendar";
 import { Label } from "office-ui-fabric-react/lib/Label";
+import { sp } from "@pnp/sp";
 
 const DayPickerStrings = {
   months: [
@@ -71,17 +72,18 @@ export const GbtbForm = (props) => {
     dropdownItemsWrapper: { maxHeight: "300px" },
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
+    sp.setup({
+      spfxContext: props.siteDetails.context,
+    });
     const fetchData = async () => {
       try {
         setStatus("loading");
         const divResult = await App.getList(
-          props.siteDetails,
           props.siteDetails.divisionListName
         );
         setDivisionList(App.formatDropList(divResult));
         const depResult = await App.getList(
-          props.siteDetails,
           props.siteDetails.departmentListName
         );
         setDepartmentList(App.formatDropList(depResult));
@@ -92,10 +94,9 @@ export const GbtbForm = (props) => {
       }
     };
     fetchData();
-    // App.getUser(props.siteDetails);
   }, []);
 
-  const resetForm = (e) => {
+  const resetForm = () => {
     setFullName("");
     setDivision(null);
     setDepartment(null);
@@ -103,19 +104,19 @@ export const GbtbForm = (props) => {
   };
 
   const submitForm = () => {
-    const data = {
+    var data = {
       fullName: fullName,
       division: divisionList[division].text,
       department: departmentList[department].text,
       IDOV: IDOV,
+      status: "active",
     };
-    App.createForm(props.siteDetails, data).then(
+    App.addItem(props.siteDetails.GbtbListName, data).then(
       (value) => {
         alert("Form submitted successfully!");
-        resetForm;
+        resetForm();
       },
       (reason) => {
-        console.log(reason);
         alert("Form submitted failed.");
       }
     );
@@ -181,6 +182,7 @@ export const GbtbForm = (props) => {
                 highlightSelectedMonth={true}
                 minDate={App.addDays(new Date(), 13)}
                 maxDate={App.addDays(new Date(), 90)}
+                // today={App.addDays(new Date(), 13)}
               />
             </label>
           </div>

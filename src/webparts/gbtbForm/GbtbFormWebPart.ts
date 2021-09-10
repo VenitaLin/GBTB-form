@@ -7,7 +7,7 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as strings from 'GbtbFormWebPartStrings';
-import HomePage from './components/GbtbHome';
+import {HomePage} from './components/GbtbHome';
 export interface IGbtbFormWebPartProps {
   description: string;
 }
@@ -21,7 +21,7 @@ export default class GbtbFormWebPart extends BaseClientSideWebPart<IGbtbFormWebP
         description: this.properties.description,
         spHttpClient: this.context.spHttpClient,
         siteUrl: this.context.pageContext.web.absoluteUrl,
-        formListName: "GBTB%20Booking%20Form", //set the Form List Name
+        GbtbListName: "GBTB Booking Form", //set the Form List Name
         divisionListName: "Division",//set the division List Name
         departmentListName: "Department",//set the department List Name
         context: this.context,
