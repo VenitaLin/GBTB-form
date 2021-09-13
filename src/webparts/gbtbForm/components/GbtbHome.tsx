@@ -29,7 +29,7 @@ export const HomePage = (props) => {
     <div>
       <h1>Hello, world!</h1>
       <h2>{status}</h2>
-      <Bookings bookings={bookings}/>
+      <Bookings bookings={bookings} status={status} />
       <GbtbForm siteDetails={props} />
     </div>
   );

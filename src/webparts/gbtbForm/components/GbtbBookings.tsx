@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DetailsList,
   DetailsListLayoutMode,
@@ -7,10 +7,15 @@ import {
   SelectionMode,
   IColumn,
 } from "office-ui-fabric-react/lib/DetailsList";
-import { CommandBar, ICommandBarStyles } from 'office-ui-fabric-react/lib/CommandBar';
+import {
+  CommandBar,
+  ICommandBarStyles,
+} from "office-ui-fabric-react/lib/CommandBar";
 
 export const Bookings = (props) => {
-  const commandBarStyles: Partial<ICommandBarStyles> = { root: { marginBottom: '0px' } };
+  const commandBarStyles: Partial<ICommandBarStyles> = {
+    root: { marginBottom: "0px" },
+  };
   const commandItems = [
     {
       key: "addBooking",
@@ -26,6 +31,7 @@ export const Bookings = (props) => {
     },
   ];
   const [selectedItem, setSelectedItem] = useState(null);
+  const [msg, setMsg] = useState("");
   const columns = [
     {
       key: "column1",
@@ -33,7 +39,7 @@ export const Bookings = (props) => {
       fieldName: "name",
       minWidth: 100,
       maxWidth: 200,
-      isResizable: true,
+      isResizable: false,
     },
     {
       key: "column2",
@@ -41,7 +47,7 @@ export const Bookings = (props) => {
       fieldName: "IDOV",
       minWidth: 100,
       maxWidth: 200,
-      isResizable: true,
+      isResizable: false,
     },
     {
       key: "column3",
@@ -49,49 +55,51 @@ export const Bookings = (props) => {
       fieldName: "status",
       minWidth: 100,
       maxWidth: 200,
-      isResizable: true,
+      isResizable: false,
     },
   ];
+  
+  useEffect(() => {
+    if (props.status == "loading") {
+      setMsg("Loading...");
+    } else if (props.bookings.length == 0) {
+      setMsg("No Existing Booking.");
+    }
+  }, []);
 
-  // const getKey = (item: any, index?: number) => {
-  //   console.log(item);
-  //   return item.key;
-  // };
-  if (props.bookings.length != 0){
+  if (props.bookings.length != 0) {
     console.log(props.bookings);
     return (
       <div>
-      <CommandBar
-        styles={commandBarStyles}
-        items={commandItems}
-      />
-      <DetailsList
-        items={props.bookings}
-        compact={false}
-        columns={columns}
-        selectionMode={SelectionMode.multiple}
-        // getKey={getKey}
-        setKey="multiple"
-        layoutMode={DetailsListLayoutMode.justified}
-        isHeaderVisible={true}
-        selection={selectedItem}
-        selectionPreservedOnEmptyClick={true}
-        // onItemInvoked={this._onItemInvoked}
-        enterModalSelectionOnTouch={true}
-        ariaLabelForSelectionColumn="Toggle selection"
-        ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-        checkButtonAriaLabel="Row checkbox"
-      />
-    </div>
-    )
-  }else {
+        <CommandBar styles={commandBarStyles} items={commandItems} />
+        <DetailsList
+          items={props.bookings}
+          compact={false}
+          columns={columns}
+          selectionMode={SelectionMode.multiple}
+          // getKey={getKey}
+          setKey="multiple"
+          layoutMode={DetailsListLayoutMode.justified}
+          isHeaderVisible={true}
+          selection={selectedItem}
+          selectionPreservedOnEmptyClick={true}
+          // onItemInvoked={this._onItemInvoked}
+          enterModalSelectionOnTouch={true}
+          ariaLabelForSelectionColumn="Toggle selection"
+          ariaLabelForSelectAllCheckbox="Toggle selection for all items"
+          checkButtonAriaLabel="Row checkbox"
+        />
+      </div>
+    );
+  } else {
     return (
       <div>
-        <CommandBar
-          styles={commandBarStyles}
-          items={commandItems}
-        />
-        <div style={{ textAlign: "center", color: '#C2C9D6', fontSize: 'x-large',}}>No Existing Booking.</div>
+        <CommandBar styles={commandBarStyles} items={commandItems} />
+        <div
+          style={{ textAlign: "center", color: "#C2C9D6", fontSize: "x-large" }}
+        >
+          {msg}
+        </div>
       </div>
     );
   }
