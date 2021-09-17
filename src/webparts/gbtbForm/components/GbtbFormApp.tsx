@@ -4,6 +4,7 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
+import { differenceInDays, parseISO } from 'date-fns'
 
 export const validateForm = (props) => {
   if (!props.fullName || !props.division || !props.department) {
@@ -23,12 +24,6 @@ const setGbtbFormProps = (props) => {
     status: props.status,
   };
   return _spForm;
-};
-
-export const addDays = (date, days) => {
-  var result = new Date(date);
-  result.setDate(result.getDate() + days);
-  return result;
 };
 
 export const addItem = async (listName, data) => {
@@ -54,6 +49,19 @@ export const getBookings = async (listName) => {
   return formatBooking(allItems);
 };
 
+export const isDisabledNewBookingBtn = (bookingList) => {
+  let count = 0;
+  for (let i = 0; i < bookingList.length; i++) {
+    if (bookingList[i].status == "active") {
+      count += 1;
+      if (count >= 2) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
 export const formatDropList = (data) => {
   var listItems = [];
   for (var k in data) {
@@ -64,7 +72,7 @@ export const formatDropList = (data) => {
 
 const formatBooking = (bookings) => {
   var result = [];
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < bookings.length; i++) {
     if (bookings[i]) {
       result.push({
         key: bookings[i].ID,
@@ -76,4 +84,14 @@ const formatBooking = (bookings) => {
     }
   }
   return result;
+};
+
+export const isWithin2W = (IDOV) => {
+  var today = new Date();
+  let countDays = differenceInDays(parseISO(IDOV), today)
+  if (countDays <= 14) {
+    return true;
+  } else {
+    return false;
+  }
 };

@@ -10,6 +10,7 @@ import {
 import { Calendar } from "office-ui-fabric-react/lib/Calendar";
 import { Label } from "office-ui-fabric-react/lib/Label";
 import { sp } from "@pnp/sp";
+import { addDays } from 'date-fns'
 
 const DayPickerStrings = {
   months: [
@@ -64,7 +65,7 @@ export const GbtbForm = (props) => {
   const [fullName, setFullName] = useState("");
   const [division, setDivision] = useState(null);
   const [department, setDepartment] = useState(null);
-  const [IDOV, setIDOV] = useState(App.addDays(new Date(), 13));
+  const [IDOV, setIDOV] = useState(addDays(new Date(), 13));
   const [divisionList, setDivisionList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
 
@@ -89,7 +90,6 @@ export const GbtbForm = (props) => {
         setDepartmentList(App.formatDropList(depResult));
         setStatus("ready");
       } catch (e) {
-        console.log(e);
         setStatus("error");
       }
     };
@@ -100,7 +100,7 @@ export const GbtbForm = (props) => {
     setFullName("");
     setDivision(null);
     setDepartment(null);
-    setIDOV(App.addDays(new Date(), 13));
+    setIDOV(addDays(new Date(), 13));
   };
 
   const submitForm = () => {
@@ -180,9 +180,8 @@ export const GbtbForm = (props) => {
                 value={IDOV}
                 strings={DayPickerStrings}
                 highlightSelectedMonth={true}
-                minDate={App.addDays(new Date(), 13)}
-                maxDate={App.addDays(new Date(), 90)}
-                // today={App.addDays(new Date(), 13)}
+                minDate={addDays(new Date(), 13)}
+                maxDate={addDays(new Date(), 90)}
               />
             </label>
           </div>

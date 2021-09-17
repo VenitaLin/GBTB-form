@@ -8,7 +8,7 @@ import { sp } from "@pnp/sp";
 export const HomePage = (props) => {
   const [bookings, setBookings] = useState([]);
   const [status, setStatus] = useState("ready");
-
+  const [isDisabledNewBookBtn, setIsDisabledNewBookBtn] = useState(false);
   useEffect(() => {
     sp.setup({
       spfxContext: props.context,
@@ -16,8 +16,10 @@ export const HomePage = (props) => {
     const fetchData = async () => {
       try {
         setStatus("loading");
-        let bookingsList = await App.getBookings(props.GbtbListName);
-        setBookings(bookingsList);
+        await App.getBookings(props.GbtbListName).then((bookingsList) => {
+          setBookings(bookingsList);
+          setIsDisabledNewBookBtn(App.isDisabledNewBookingBtn(bookingsList));
+        });
         setStatus("ready");
       } catch (e) {
         setStatus("error");
@@ -27,10 +29,14 @@ export const HomePage = (props) => {
   }, []);
   return (
     <div>
-      <h1>Hello, world!</h1>
       <h2>{status}</h2>
-      <Bookings bookings={bookings} status={status} />
-      <GbtbForm siteDetails={props} />
+      <Bookings
+        bookings={bookings}
+        status={status}
+        siteDetails={props}
+        isDisabledNewBookBtn={isDisabledNewBookBtn}
+      />
+      {/* <GbtbForm siteDetails={props} /> */}
     </div>
   );
 };
