@@ -68,7 +68,7 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
   const [IDOV, setIDOV] = useState(addDays(new Date(), 13));
   const [divisionList, setDivisionList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
-
+  const [fullyBookedDate, setFullyBookedDate] = useState([]);
   const dropdownStyles: Partial<IDropdownStyles> = {
     dropdownItemsWrapper: { maxHeight: "300px" },
   };
@@ -86,6 +86,10 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
           props.siteDetails.departmentListName
         );
         setDepartmentList(App.formatDropList(depResult));
+        const dateList = await App.getFullyBookedDates(
+          props.siteDetails.GbtbListName
+        );
+        setFullyBookedDate(dateList);
         setStatus("ready");
       } catch (e) {
         setStatus("error");
@@ -181,6 +185,7 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
                 highlightSelectedMonth={true}
                 minDate={addDays(new Date(), 13)}
                 maxDate={addDays(new Date(), 90)}
+                restrictedDates={fullyBookedDate}
               />
             </label>
           </div>

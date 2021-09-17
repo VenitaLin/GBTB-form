@@ -74,12 +74,13 @@ const formatBooking = (bookings) => {
   var result = [];
   for (let i = 0; i < bookings.length; i++) {
     if (bookings[i]) {
+      const date = parseISO(bookings[i].IDOV).toLocaleDateString();
       result.push({
         key: bookings[i].ID,
         name: bookings[i].Title,
         value: bookings[i].ID,
         status: bookings[i].status,
-        IDOV: bookings[i].IDOV,
+        IDOV: date,
       });
     }
   }
@@ -105,4 +106,27 @@ export const cancelBooking = async (id, ListName) => {
       status: "canceled",
     });
   return updatedItem;
+};
+
+export const getFullyBookedDates = async (listName) => {
+  const dateList: any[] = await sp.web.lists
+    .getByTitle(listName)
+    .items.select("IDOV")
+    .filter("status eq 'active'")
+    .getAll();
+  let dic = {};
+  let resultDates = [];
+  for (let i = 0; i < dateList.length; i++) {
+    if (dateList[i].IDOV in dic) {
+      dic[dateList[i].IDOV] += 1;
+    } else {
+      dic[dateList[i].IDOV] = 1;
+    }
+  }
+  Object.keys(dic).map((k) => {
+    if (dic[k] >= 2) {
+      resultDates.push(parseISO(k));
+    }
+  });
+  return resultDates;
 };
