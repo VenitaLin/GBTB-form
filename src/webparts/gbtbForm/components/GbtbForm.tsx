@@ -10,7 +10,7 @@ import {
 import { Calendar } from "office-ui-fabric-react/lib/Calendar";
 import { Label } from "office-ui-fabric-react/lib/Label";
 import { sp } from "@pnp/sp";
-import { addDays } from 'date-fns'
+import { addDays } from "date-fns";
 
 const DayPickerStrings = {
   months: [
@@ -59,7 +59,7 @@ const DayPickerStrings = {
   weekNumberFormatString: "Week number {0}",
 };
 
-export const GbtbForm = (props) => {
+export const GbtbForm = ({ updateNewBooking, ...props }) => {
   let myFormRef;
   const [status, setStatus] = useState("ready");
   const [fullName, setFullName] = useState("");
@@ -80,9 +80,7 @@ export const GbtbForm = (props) => {
     const fetchData = async () => {
       try {
         setStatus("loading");
-        const divResult = await App.getList(
-          props.siteDetails.divisionListName
-        );
+        const divResult = await App.getList(props.siteDetails.divisionListName);
         setDivisionList(App.formatDropList(divResult));
         const depResult = await App.getList(
           props.siteDetails.departmentListName
@@ -97,6 +95,7 @@ export const GbtbForm = (props) => {
   }, []);
 
   const resetForm = () => {
+    updateNewBooking();
     setFullName("");
     setDivision(null);
     setDepartment(null);

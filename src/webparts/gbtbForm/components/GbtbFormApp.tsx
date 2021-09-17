@@ -4,7 +4,7 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
-import { differenceInDays, parseISO } from 'date-fns'
+import { differenceInDays, parseISO } from "date-fns";
 
 export const validateForm = (props) => {
   if (!props.fullName || !props.division || !props.department) {
@@ -88,10 +88,21 @@ const formatBooking = (bookings) => {
 
 export const isWithin2W = (IDOV) => {
   var today = new Date();
-  let countDays = differenceInDays(parseISO(IDOV), today)
+  let countDays = differenceInDays(parseISO(IDOV), today);
+  console.log(countDays);
   if (countDays <= 14) {
     return true;
   } else {
     return false;
   }
+};
+
+export const cancelBooking = async (id, ListName) => {
+  const updatedItem = await sp.web.lists
+    .getByTitle(ListName)
+    .items.getById(id)
+    .update({
+      status: "canceled",
+    });
+  return updatedItem;
 };

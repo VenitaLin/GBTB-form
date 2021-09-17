@@ -14,7 +14,11 @@ import {
 import { GbtbForm } from "./GbtbForm";
 import * as App from "./GbtbFormApp";
 
-export const Bookings = (props) => {
+export const Bookings = ({
+  updateCancelBooking,
+  updateNewBooking,
+  ...props
+}) => {
   const commandBarStyles: Partial<ICommandBarStyles> = {
     root: { marginBottom: "0px" },
   };
@@ -26,7 +30,9 @@ export const Bookings = (props) => {
     setShowForm(!showForm);
   };
   const cancelBooking = () => {
-    console.log(selection);
+    App.cancelBooking(selectedItem[0].key, props.siteDetails.GbtbListName);
+    alert("Booking has been canceled.");
+    updateCancelBooking();
   };
   const [selectedItem, setSelectedItem] = useState<Object | undefined>(
     undefined
@@ -36,7 +42,6 @@ export const Bookings = (props) => {
       setSelectedItem(selection.getSelection());
     },
   });
-
   const commandItems = [
     {
       key: "addBooking",
@@ -79,15 +84,18 @@ export const Bookings = (props) => {
       isResizable: false,
     },
   ];
-
   useEffect(() => {
     if (props.status == "loading") {
       setMsg("Loading...");
     } else if (props.bookings.length == 0) {
       setMsg("No Existing Booking.");
     }
-    if (selectedItem && selectedItem[0] && !App.isWithin2W(selectedItem[0].IDOV)){
-      setCacelbookingStatus(false)
+    if (
+      selectedItem &&
+      selectedItem[0] &&
+      !App.isWithin2W(selectedItem[0].IDOV)
+    ) {
+      setCacelbookingStatus(false);
     }
   }, [selectedItem]);
 
@@ -100,19 +108,19 @@ export const Bookings = (props) => {
           compact={false}
           columns={columns}
           selectionMode={SelectionMode.single}
-          // getKey={getKey}
           setKey="single"
           layoutMode={DetailsListLayoutMode.justified}
           isHeaderVisible={true}
           selection={selection}
           selectionPreservedOnEmptyClick={true}
-          // onItemInvoked={this._onItemInvoked}
           enterModalSelectionOnTouch={true}
-          ariaLabelForSelectionColumn="Toggle selection"
-          ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-          checkButtonAriaLabel="Row checkbox"
         />
-        {showForm && <GbtbForm siteDetails={props.siteDetails} />}
+        {props.isFormShown && showForm && (
+          <GbtbForm
+            siteDetails={props.siteDetails}
+            updateNewBooking={updateNewBooking}
+          />
+        )}
       </div>
     );
   } else {
@@ -123,7 +131,12 @@ export const Bookings = (props) => {
           style={{ textAlign: "center", color: "#C2C9D6", fontSize: "x-large" }}
         >
           {msg}
-          {showForm && <GbtbForm siteDetails={props.siteDetails} />}
+          {props.isFormShown && showForm && (
+            <GbtbForm
+              siteDetails={props.siteDetails}
+              updateNewBooking={updateNewBooking}
+            />
+          )}
         </div>
       </div>
     );
