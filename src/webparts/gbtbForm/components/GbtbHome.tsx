@@ -9,12 +9,14 @@ export const HomePage = (props) => {
   const [bookings, setBookings] = useState([]);
   const [status, setStatus] = useState("ready");
   const [isDisabledNewBookBtn, setIsDisabledNewBookBtn] = useState(false);
+  const [activeBookingDate, setActiveBookingDate] = useState(null);
   const fetchData = async () => {
     try {
       setStatus("loading");
       await App.getBookings(props.GbtbListName).then((bookingsList) => {
         setBookings(bookingsList);
         setIsDisabledNewBookBtn(App.isDisabledNewBookingBtn(bookingsList));
+        setActiveBookingDate(App.getLatestActiveIDOV(bookingsList));
       });
       setStatus("ready");
     } catch (e) {
@@ -44,6 +46,7 @@ export const HomePage = (props) => {
         siteDetails={props}
         isDisabledNewBookBtn={isDisabledNewBookBtn}
         isFormShown={!isDisabledNewBookBtn}
+        activeBookingDate={activeBookingDate}
       />
       {/* <GbtbForm siteDetails={props} /> */}
     </div>

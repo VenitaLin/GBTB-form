@@ -4,10 +4,10 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
-import { differenceInDays, parseISO } from "date-fns";
+import { differenceInDays, parseISO, addDays } from "date-fns";
 
-export const validateForm = (props) => {
-  if (!props.fullName || !props.division || !props.department) {
+export const validateForm = (fullName, division, department, IDOV) => {
+  if (!fullName || !division || !department || !IDOV) {
     return false;
   } else {
     return true;
@@ -81,6 +81,7 @@ const formatBooking = (bookings) => {
         value: bookings[i].ID,
         status: bookings[i].status,
         IDOV: date,
+        IDOVdate: bookings[i].IDOV,
       });
     }
   }
@@ -130,3 +131,41 @@ export const getFullyBookedDates = async (listName) => {
   });
   return resultDates;
 };
+
+export const checkDateAvailable = async (selectedDate, listName) => {
+  const dateList: any[] = await sp.web.lists
+    .getByTitle(listName)
+    .items.select("IDOV")
+    .filter(
+      "IDOV eq '" + selectedDate.toISOString() + "' and status eq 'active'"
+    )
+    .getAll();
+  if (dateList.length >= 2) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+export const datesBlockFromActiveBooking = (date) => {
+  let dateList = [];
+  // console.log(date)
+  for (let i = 1; i < 31; i++) {
+    dateList.push(addDays(parseISO(date), i));
+  }
+  return dateList;
+};
+
+export const getLatestActiveIDOV = (bookings) => {
+  let countActive = 0
+  let date = null
+  for (let i = 0; i < bookings.length; i++) {
+    if (bookings[i].status == "active"){
+      countActive += 1
+      date = bookings[i].IDOVdate;
+    }
+  }
+  if (countActive == 1){
+    return date
+  }
+}

@@ -6,6 +6,7 @@ import {
   Dropdown,
   IDropdownStyles,
   TextField,
+  PrimaryButton,
 } from "office-ui-fabric-react/lib";
 import { Calendar } from "office-ui-fabric-react/lib/Calendar";
 import { Label } from "office-ui-fabric-react/lib/Label";
@@ -62,6 +63,7 @@ const DayPickerStrings = {
 export const GbtbForm = ({ updateNewBooking, ...props }) => {
   let myFormRef;
   const [status, setStatus] = useState("ready");
+  const [isInvalid, setIsInvalid] = useState(true);
   const [fullName, setFullName] = useState("");
   const [division, setDivision] = useState(null);
   const [department, setDepartment] = useState(null);
@@ -69,14 +71,31 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
   const [divisionList, setDivisionList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [fullyBookedDate, setFullyBookedDate] = useState([]);
+  const [daysFromActiveBookings, setDaysFromActiveBookings] = useState([]);
+  const [disableDate, setDisableDate] = useState([]);
   const dropdownStyles: Partial<IDropdownStyles> = {
     dropdownItemsWrapper: { maxHeight: "300px" },
   };
-
+  const [errMsg, setErrMsg] = useState("");
+  const _setIDOV = async (selectedDate) => {
+    const isDateAvailable = await App.checkDateAvailable(
+      selectedDate,
+      props.siteDetails.GbtbListName
+    );
+    if (isDateAvailable) {
+      setErrMsg("");
+      setIDOV(selectedDate);
+    } else {
+      setErrMsg(
+        "Selected date has been fully booked. Please select another date."
+      );
+    }
+  };
   useEffect(() => {
     sp.setup({
       spfxContext: props.siteDetails.context,
     });
+
     const fetchData = async () => {
       try {
         setStatus("loading");
@@ -86,16 +105,24 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
           props.siteDetails.departmentListName
         );
         setDepartmentList(App.formatDropList(depResult));
-        const dateList = await App.getFullyBookedDates(
-          props.siteDetails.GbtbListName
+        await App.getFullyBookedDates(props.siteDetails.GbtbListName).then(
+          (dateList) => {
+            setFullyBookedDate(dateList);
+            const dBFAB = App.datesBlockFromActiveBooking(
+              props.activeBookingDate
+            );
+            setDaysFromActiveBookings(dBFAB);
+            const disDate = [...dateList, ...dBFAB];
+            setDisableDate(disDate);
+          }
         );
-        setFullyBookedDate(dateList);
         setStatus("ready");
       } catch (e) {
         setStatus("error");
       }
     };
     fetchData();
+    
   }, []);
 
   const resetForm = () => {
@@ -176,8 +203,9 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
           <div className={styles.item}>
             <label>
               <Label required>Intended Date of Visit</Label>
+              <div className={styles.errMsg}>{errMsg}</div>
               <Calendar
-                onSelectDate={setIDOV}
+                onSelectDate={(selectedDate) => _setIDOV(selectedDate)}
                 isMonthPickerVisible={true}
                 showGoToToday={false}
                 value={IDOV}
@@ -185,27 +213,20 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
                 highlightSelectedMonth={true}
                 minDate={addDays(new Date(), 13)}
                 maxDate={addDays(new Date(), 90)}
-                restrictedDates={fullyBookedDate}
+                restrictedDates={disableDate}
               />
             </label>
           </div>
           <div className={styles.item}>
             <p>
               <div className={styles.buttonItem}>
-                <button
+                <PrimaryButton
+                  text="Submit"
                   type="button"
-                  className={styles.button}
                   onClick={submitForm}
-                >
-                  Submit
-                </button>
-                <button
-                  type="reset"
-                  className={styles.button}
-                  onClick={resetForm}
-                >
-                  Reset
-                </button>
+                  disabled={!App.validateForm(fullName, division, department, IDOV)}
+                />
+                <PrimaryButton text="Reset" type="reset" onClick={resetForm} />
               </div>
             </p>
           </div>

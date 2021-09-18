@@ -26,6 +26,7 @@ export const Bookings = ({
   const [newBookStatus, setNewBookStatus] = useState(false);
   const [cancelBookStatus, setCacelbookingStatus] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  
   const addBooking = () => {
     setShowForm(!showForm);
   };
@@ -93,10 +94,19 @@ export const Bookings = ({
     if (
       selectedItem &&
       selectedItem[0] &&
-      !App.isWithin2W(selectedItem[0].IDOV)
+      !App.isWithin2W(selectedItem[0].IDOVdate)
     ) {
       setCacelbookingStatus(false);
+    } else if (
+      selectedItem &&
+      selectedItem[0] &&
+      App.isWithin2W(selectedItem[0].IDOVdate)
+    ) {
+      setCacelbookingStatus(true);
+    } else {
+      setCacelbookingStatus(true);
     }
+    
   }, [selectedItem]);
 
   if (props.bookings.length != 0) {
@@ -119,6 +129,7 @@ export const Bookings = ({
           <GbtbForm
             siteDetails={props.siteDetails}
             updateNewBooking={updateNewBooking}
+            activeBookingDate={props.activeBookingDate}
           />
         )}
       </div>
@@ -135,6 +146,7 @@ export const Bookings = ({
             <GbtbForm
               siteDetails={props.siteDetails}
               updateNewBooking={updateNewBooking}
+              activeBookingDate={props.activeBookingDate}
             />
           )}
         </div>

@@ -15,7 +15,9 @@
     @include ms-xlPush2;
     @include ms-lgPush1;
   }
-
+  .errMsg {
+    color: lightcoral;
+  }
   .title {
     @include ms-font-xl;
     @include ms-fontColor-black;
