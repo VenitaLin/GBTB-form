@@ -37,7 +37,6 @@ export const HomePage = (props) => {
   }, []);
   return (
     <div>
-      <h2>{status}</h2>
       <Bookings
         updateCancelBooking={updateCancelBooking}
         updateNewBooking={updateNewBooking}
@@ -48,7 +47,6 @@ export const HomePage = (props) => {
         isFormShown={!isDisabledNewBookBtn}
         activeBookingDate={activeBookingDate}
       />
-      {/* <GbtbForm siteDetails={props} /> */}
     </div>
   );
 };

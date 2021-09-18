@@ -91,7 +91,6 @@ const formatBooking = (bookings) => {
 export const isWithin2W = (IDOV) => {
   var today = new Date();
   let countDays = differenceInDays(parseISO(IDOV), today);
-  console.log(countDays);
   if (countDays <= 14) {
     return true;
   } else {
@@ -149,7 +148,6 @@ export const checkDateAvailable = async (selectedDate, listName) => {
 
 export const datesBlockFromActiveBooking = (date) => {
   let dateList = [];
-  // console.log(date)
   for (let i = 1; i < 31; i++) {
     dateList.push(addDays(parseISO(date), i));
   }
