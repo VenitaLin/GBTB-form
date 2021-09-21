@@ -39,37 +39,6 @@ export const getList = async (listName) => {
   return allItems;
 };
 
-export const getBookings = async (listName) => {
-  let user = await sp.web.currentUser();
-  const allItems: any[] = await sp.web.lists
-    .getByTitle(listName)
-    .items.select("Title", "Id", "IDOV", "status")
-    .filter("AuthorId eq '" + user.Id + "'")
-    .getAll();
-  return formatBooking(allItems);
-};
-
-export const isDisabledNewBookingBtn = (bookingList) => {
-  let count = 0;
-  for (let i = 0; i < bookingList.length; i++) {
-    if (bookingList[i].status == "active") {
-      count += 1;
-      if (count >= 2) {
-        return true;
-      }
-    }
-  }
-  return false;
-};
-
-export const formatDropList = (data) => {
-  var listItems = [];
-  for (var k in data) {
-    listItems.push({ key: k, text: data[k].Title });
-  }
-  return listItems;
-};
-
 const formatBooking = (bookings) => {
   var result = [];
   for (let i = 0; i < bookings.length; i++) {
@@ -88,6 +57,37 @@ const formatBooking = (bookings) => {
   return result;
 };
 
+export const getBookings = async (listName) => {
+  let user = await sp.web.currentUser();
+  const allItems: any[] = await sp.web.lists
+    .getByTitle(listName)
+    .items.select("Title", "Id", "IDOV", "status")
+    .filter("AuthorId eq '" + user.Id + "'")
+    .getAll();
+  return formatBooking(allItems);
+};
+
+export const isDisabledNewBookingBtn = (bookingList) => {
+  let count = 0;
+  for (let i = 0; i < bookingList.length; i++) {
+    if (bookingList[i].status == "Active") {
+      count += 1;
+      if (count >= 2) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+export const formatDropList = (data) => {
+  var listItems = [];
+  for (var k in data) {
+    listItems.push({ key: k, text: data[k].Title });
+  }
+  return listItems;
+};
+
 export const isWithin2W = (IDOV) => {
   var today = new Date();
   let countDays = differenceInDays(parseISO(IDOV), today);
@@ -103,7 +103,7 @@ export const cancelBooking = async (id, ListName) => {
     .getByTitle(ListName)
     .items.getById(id)
     .update({
-      status: "canceled",
+      status: "Cancelled",
     });
   return updatedItem;
 };
@@ -112,7 +112,7 @@ export const getFullyBookedDates = async (listName) => {
   const dateList: any[] = await sp.web.lists
     .getByTitle(listName)
     .items.select("IDOV")
-    .filter("status eq 'active'")
+    .filter("status eq 'Active'")
     .getAll();
   let dic = {};
   let resultDates = [];
@@ -136,7 +136,7 @@ export const checkDateAvailable = async (selectedDate, listName) => {
     .getByTitle(listName)
     .items.select("IDOV")
     .filter(
-      "IDOV eq '" + selectedDate.toISOString() + "' and status eq 'active'"
+      "IDOV eq '" + selectedDate.toISOString() + "' and status eq 'Active'"
     )
     .getAll();
   if (dateList.length >= 2) {
@@ -155,15 +155,15 @@ export const datesBlockFromActiveBooking = (date) => {
 };
 
 export const getLatestActiveIDOV = (bookings) => {
-  let countActive = 0
-  let date = null
+  let countActive = 0;
+  let date = null;
   for (let i = 0; i < bookings.length; i++) {
-    if (bookings[i].status == "active"){
-      countActive += 1
+    if (bookings[i].status == "Active") {
+      countActive += 1;
       date = bookings[i].IDOVdate;
     }
   }
-  if (countActive == 1){
-    return date
+  if (countActive == 1) {
+    return date;
   }
-}
+};

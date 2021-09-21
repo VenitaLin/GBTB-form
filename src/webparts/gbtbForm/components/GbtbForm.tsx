@@ -60,7 +60,7 @@ const DayPickerStrings = {
   weekNumberFormatString: "Week number {0}",
 };
 
-export const GbtbForm = ({ updateNewBooking, ...props }) => {
+export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   let myFormRef;
   const [status, setStatus] = useState("ready");
   const [isInvalid, setIsInvalid] = useState(true);
@@ -122,7 +122,6 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
       }
     };
     fetchData();
-    
   }, []);
 
   const resetForm = () => {
@@ -131,6 +130,7 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
     setDivision(null);
     setDepartment(null);
     setIDOV(addDays(new Date(), 13));
+    hideModal();
   };
 
   const submitForm = () => {
@@ -139,7 +139,7 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
       division: divisionList[division].text,
       department: departmentList[department].text,
       IDOV: IDOV,
-      status: "active",
+      status: "Active",
     };
     App.addItem(props.siteDetails.GbtbListName, data).then(
       (value) => {
@@ -224,7 +224,9 @@ export const GbtbForm = ({ updateNewBooking, ...props }) => {
                   text="Submit"
                   type="button"
                   onClick={submitForm}
-                  disabled={!App.validateForm(fullName, division, department, IDOV)}
+                  disabled={
+                    !App.validateForm(fullName, division, department, IDOV)
+                  }
                 />
                 <PrimaryButton text="Reset" type="reset" onClick={resetForm} />
               </div>

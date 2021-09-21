@@ -1,16 +1,18 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
+import { useBoolean } from "@uifabric/react-hooks";
 import {
+  getTheme,
   DetailsList,
   DetailsListLayoutMode,
   Selection,
   SelectionMode,
-  IColumn,
-} from "office-ui-fabric-react/lib/DetailsList";
-import {
+  Modal,
   CommandBar,
   ICommandBarStyles,
-} from "office-ui-fabric-react/lib/CommandBar";
+  IconButton,
+  IIconProps,
+} from "office-ui-fabric-react/lib/";
 import { GbtbForm } from "./GbtbForm";
 import * as App from "./GbtbFormApp";
 
@@ -23,21 +25,22 @@ export const Bookings = ({
     root: { marginBottom: "0px" },
   };
   const [msg, setMsg] = useState("");
-  const [newBookStatus, setNewBookStatus] = useState(false);
   const [cancelBookStatus, setCacelbookingStatus] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  
-  const addBooking = () => {
-    setShowForm(!showForm);
-  };
-  const cancelBooking = () => {
-    App.cancelBooking(selectedItem[0].key, props.siteDetails.GbtbListName);
-    alert("Booking has been canceled.");
-    updateCancelBooking();
-  };
+  const [isModalOpen, { setTrue: showModal, setFalse: hideModal }] =
+    useBoolean(false);
   const [selectedItem, setSelectedItem] = useState<Object | undefined>(
     undefined
   );
+  const cancelIcon: IIconProps = { iconName: "Cancel" };
+  const cancelBooking = async () => {
+    await App.cancelBooking(
+      selectedItem[0].key,
+      props.siteDetails.GbtbListName
+    );
+    await updateCancelBooking();
+    alert("Booking has been cancelled.");
+    hideModal();
+  };
   const selection = new Selection({
     onSelectionChanged: () => {
       setSelectedItem(selection.getSelection());
@@ -48,7 +51,7 @@ export const Bookings = ({
       key: "addBooking",
       text: "New Booking",
       iconProps: { iconName: "Add" },
-      onClick: addBooking,
+      onClick: showModal,
       disabled: props.isDisabledNewBookBtn,
     },
     {
@@ -59,18 +62,22 @@ export const Bookings = ({
       disabled: cancelBookStatus,
     },
   ];
+  const theme = getTheme();
+  const iconButtonStyles = {
+    root: {
+      color: theme.palette.neutralPrimary,
+      marginLeft: "auto",
+      marginTop: "4px",
+      marginRight: "2px",
+    },
+    rootHovered: {
+      color: theme.palette.neutralDark,
+    },
+  };
   const columns = [
     {
-      key: "column1",
-      name: "Booking Name",
-      fieldName: "name",
-      minWidth: 100,
-      maxWidth: 200,
-      isResizable: false,
-    },
-    {
       key: "column2",
-      name: "Itended Date of Visit",
+      name: "Intended Date of Visit",
       fieldName: "IDOV",
       minWidth: 100,
       maxWidth: 200,
@@ -106,7 +113,6 @@ export const Bookings = ({
     } else {
       setCacelbookingStatus(true);
     }
-    
   }, [selectedItem]);
 
   if (props.bookings.length != 0) {
@@ -125,12 +131,21 @@ export const Bookings = ({
           selectionPreservedOnEmptyClick={true}
           enterModalSelectionOnTouch={true}
         />
-        {props.isFormShown && showForm && (
-          <GbtbForm
-            siteDetails={props.siteDetails}
-            updateNewBooking={updateNewBooking}
-            activeBookingDate={props.activeBookingDate}
-          />
+        {props.isFormAvailable && (
+          <Modal isOpen={isModalOpen} onDismiss={hideModal} isBlocking={false}>
+            <IconButton
+              styles={iconButtonStyles}
+              iconProps={cancelIcon}
+              ariaLabel="Close popup modal"
+              onClick={hideModal}
+            />
+            <GbtbForm
+              siteDetails={props.siteDetails}
+              updateNewBooking={updateNewBooking}
+              activeBookingDate={props.activeBookingDate}
+              hideModal={hideModal}
+            />
+          </Modal>
         )}
       </div>
     );
@@ -142,12 +157,25 @@ export const Bookings = ({
           style={{ textAlign: "center", color: "#C2C9D6", fontSize: "x-large" }}
         >
           {msg}
-          {props.isFormShown && showForm && (
-            <GbtbForm
-              siteDetails={props.siteDetails}
-              updateNewBooking={updateNewBooking}
-              activeBookingDate={props.activeBookingDate}
-            />
+          {props.isFormAvailable && (
+            <Modal
+              isOpen={isModalOpen}
+              onDismiss={hideModal}
+              isBlocking={false}
+            >
+              <IconButton
+                styles={iconButtonStyles}
+                iconProps={cancelIcon}
+                ariaLabel="Close popup modal"
+                onClick={hideModal}
+              />
+              <GbtbForm
+                siteDetails={props.siteDetails}
+                updateNewBooking={updateNewBooking}
+                activeBookingDate={props.activeBookingDate}
+                hideModal={hideModal}
+              />
+            </Modal>
           )}
         </div>
       </div>
