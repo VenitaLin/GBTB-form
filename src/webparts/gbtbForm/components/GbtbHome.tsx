@@ -44,7 +44,7 @@ export const HomePage = (props) => {
         status={status}
         siteDetails={props}
         isDisabledNewBookBtn={isDisabledNewBookBtn}
-        isFormShown={!isDisabledNewBookBtn}
+        isFormAvailable={!isDisabledNewBookBtn}
         activeBookingDate={activeBookingDate}
       />
     </div>

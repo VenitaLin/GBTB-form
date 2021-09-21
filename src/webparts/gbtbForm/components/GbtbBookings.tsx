@@ -12,6 +12,11 @@ import {
   ICommandBarStyles,
   IconButton,
   IIconProps,
+  CommandBarButton,
+  TooltipHost,
+  ITooltipHostStyles,
+  Stack,
+  IStackStyles,
 } from "office-ui-fabric-react/lib/";
 import { GbtbForm } from "./GbtbForm";
 import * as App from "./GbtbFormApp";
@@ -31,7 +36,6 @@ export const Bookings = ({
   const [selectedItem, setSelectedItem] = useState<Object | undefined>(
     undefined
   );
-  const cancelIcon: IIconProps = { iconName: "Cancel" };
   const cancelBooking = async () => {
     await App.cancelBooking(
       selectedItem[0].key,
@@ -46,22 +50,7 @@ export const Bookings = ({
       setSelectedItem(selection.getSelection());
     },
   });
-  const commandItems = [
-    {
-      key: "addBooking",
-      text: "New Booking",
-      iconProps: { iconName: "Add" },
-      onClick: showModal,
-      disabled: props.isDisabledNewBookBtn,
-    },
-    {
-      key: "cancelBooking",
-      text: "Cancel Booking",
-      iconProps: { iconName: "Delete" },
-      onClick: cancelBooking,
-      disabled: cancelBookStatus,
-    },
-  ];
+
   const theme = getTheme();
   const iconButtonStyles = {
     root: {
@@ -92,11 +81,12 @@ export const Bookings = ({
       isResizable: false,
     },
   ];
+  const stackStyles: Partial<IStackStyles> = { root: { height: 44 } };
   useEffect(() => {
     if (props.status == "loading") {
       setMsg("Loading...");
     } else if (props.bookings.length == 0) {
-      setMsg("No Existing Booking.");
+      setMsg("No Existing Bookings.");
     }
     if (
       selectedItem &&
@@ -114,11 +104,60 @@ export const Bookings = ({
       setCacelbookingStatus(true);
     }
   }, [selectedItem]);
+  const commandItems = [
+    {
+      key: "addBooking",
+      text: "New Booking",
+      iconProps: { iconName: "Add" },
+      onClick: showModal,
+      disabled: props.isDisabledNewBookBtn,
+    },
+    {
+      key: "cancelBooking",
+      text: "Cancel Booking",
+      iconProps: { iconName: "Delete" },
+      onClick: cancelBooking,
+      disabled: cancelBookStatus,
+    },
+  ];
+  const addIcon: IIconProps = { iconName: "Add" };
+  const cancelBookingIcon: IIconProps = { iconName: "Delete" };
+  const cancelIcon: IIconProps = { iconName: "Cancel" };
+  const calloutProps = { gapSpace: 0 };
+  const hostStyles: Partial<ITooltipHostStyles> = {
+    root: { display: "inline-block" },
+  };
 
   if (props.bookings.length != 0) {
     return (
       <div>
-        <CommandBar styles={commandBarStyles} items={commandItems} />
+        {/* <CommandBar styles={commandBarStyles} items={commandItems} /> */}
+        <Stack horizontal styles={stackStyles}>
+          <TooltipHost
+            content="This is the tooltip content"
+            calloutProps={calloutProps}
+            styles={hostStyles}
+          >
+            <CommandBarButton
+              iconProps={addIcon}
+              text="New Booking"
+              disabled={props.isDisabledNewBookBtn}
+              onClick={showModal}
+            />
+          </TooltipHost>
+          <TooltipHost
+            content="This is the tooltip content"
+            calloutProps={calloutProps}
+            styles={hostStyles}
+          >
+            <CommandBarButton
+              iconProps={cancelIcon}
+              text="Cancel Booking"
+              disabled={cancelBookStatus}
+              onClick={cancelBooking}
+            />
+          </TooltipHost>
+        </Stack>
         <DetailsList
           items={props.bookings}
           compact={false}
@@ -135,7 +174,7 @@ export const Bookings = ({
           <Modal isOpen={isModalOpen} onDismiss={hideModal} isBlocking={false}>
             <IconButton
               styles={iconButtonStyles}
-              iconProps={cancelIcon}
+              iconProps={cancelBookingIcon}
               ariaLabel="Close popup modal"
               onClick={hideModal}
             />
@@ -152,7 +191,36 @@ export const Bookings = ({
   } else {
     return (
       <div>
-        <CommandBar styles={commandBarStyles} items={commandItems} />
+        {/* <CommandBar styles={commandBarStyles} items={commandItems} /> */}
+        <Stack horizontal styles={stackStyles}>
+          <TooltipHost
+            content="Maximun 2 active bookings for each person."
+            calloutProps={calloutProps}
+            styles={hostStyles}
+          >
+            <CommandBarButton
+              iconProps={addIcon}
+              styles={stackStyles}
+              text="New Booking"
+              disabled={props.isDisabledNewBookBtn}
+              onClick={showModal}
+            />
+          </TooltipHost>
+          <TooltipHost
+            content="Cancel booking is not available if intended date of visit is within 14 days."
+            calloutProps={calloutProps}
+            styles={hostStyles}
+          >
+            <CommandBarButton
+              styles={stackStyles}
+              iconProps={cancelBookingIcon}
+              text="Cancel Booking"
+              disabled={cancelBookStatus}
+              onClick={cancelBooking}
+            />
+          </TooltipHost>
+        </Stack>
+
         <div
           style={{ textAlign: "center", color: "#C2C9D6", fontSize: "x-large" }}
         >
