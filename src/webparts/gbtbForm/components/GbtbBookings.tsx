@@ -110,7 +110,7 @@ export const Bookings = ({
     <div>
       <Stack horizontal styles={stackStyles}>
         <TooltipHost
-          content="Maximun 2 active bookings for each staff."
+          content="Maximum 2 active bookings for each staff."
           calloutProps={calloutProps}
           styles={hostStyles}
           hidden={!props.isDisabledNewBookBtn}
