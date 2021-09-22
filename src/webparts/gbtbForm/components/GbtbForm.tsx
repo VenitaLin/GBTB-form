@@ -130,7 +130,6 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
     setDivision(null);
     setDepartment(null);
     setIDOV(addDays(new Date(), 13));
-    hideModal();
   };
 
   const submitForm = () => {
@@ -144,6 +143,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
     App.addItem(props.siteDetails.GbtbListName, data).then(
       (value) => {
         alert("Form submitted successfully!");
+        hideModal();
         resetForm();
       },
       (reason) => {

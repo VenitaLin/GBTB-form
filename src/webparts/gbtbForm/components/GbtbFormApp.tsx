@@ -4,7 +4,7 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
-import { differenceInDays, parseISO, addDays } from "date-fns";
+import { differenceInDays, parseISO, addDays, subDays } from "date-fns";
 
 export const validateForm = (fullName, division, department, IDOV) => {
   if (!fullName || !division || !department || !IDOV) {
@@ -151,6 +151,10 @@ export const datesBlockFromActiveBooking = (date) => {
   for (let i = 1; i < 31; i++) {
     dateList.push(addDays(parseISO(date), i));
   }
+  for (let i = 1; i < 31; i++) {
+    dateList.push(subDays(parseISO(date), i));
+  }
+  dateList.push(parseISO(date));
   return dateList;
 };
 
