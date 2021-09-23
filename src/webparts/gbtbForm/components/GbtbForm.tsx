@@ -211,8 +211,8 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
                 value={IDOV}
                 strings={DayPickerStrings}
                 highlightSelectedMonth={true}
-                minDate={addDays(new Date(), 13)}
-                maxDate={addDays(new Date(), 90)}
+                minDate={addDays(new Date(), 14)}
+                maxDate={addDays(new Date(), 91)}
                 restrictedDates={disableDate}
               />
             </label>

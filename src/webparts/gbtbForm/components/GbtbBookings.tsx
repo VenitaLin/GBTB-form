@@ -8,7 +8,6 @@ import {
   Selection,
   SelectionMode,
   Modal,
-  ICommandBarStyles,
   IconButton,
   IIconProps,
   CommandBarButton,
@@ -124,7 +123,7 @@ export const Bookings = ({
           />
         </TooltipHost>
         <TooltipHost
-          content="Cancel booking is not available if intended date of visit is within 14 days."
+          content="Cancel booking is not available if intended date of visit is within 14 days from current date."
           calloutProps={calloutProps}
           styles={hostStyles}
           hidden={!isCancelBtnDisabled}

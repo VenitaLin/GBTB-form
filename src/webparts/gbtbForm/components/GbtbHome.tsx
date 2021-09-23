@@ -1,5 +1,4 @@
 import * as React from "react";
-import { GbtbForm } from "./GbtbForm";
 import * as App from "./GbtbFormApp";
 import { Bookings } from "./GbtbBookings";
 import { useState, useEffect } from "react";
