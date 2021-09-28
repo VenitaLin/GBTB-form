@@ -59,6 +59,14 @@ export const Bookings = ({
   };
   const columns = [
     {
+      key: "column1",
+      name: "Full Name",
+      fieldName: "fullName",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: false,
+    },
+    {
       key: "column2",
       name: "Intended Date of Visit",
       fieldName: "IDOV",

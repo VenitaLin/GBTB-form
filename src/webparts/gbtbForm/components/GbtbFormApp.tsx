@@ -4,7 +4,13 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
-import { differenceInDays, parseISO, addDays, subDays } from "date-fns";
+import {
+  differenceInDays,
+  parseISO,
+  addDays,
+  subDays,
+  formatISO,
+} from "date-fns";
 
 export const validateForm = (fullName, division, department, IDOV) => {
   if (!fullName || !division || !department || !IDOV) {
@@ -46,7 +52,7 @@ const formatBooking = (bookings) => {
       const date = parseISO(bookings[i].IDOV).toLocaleDateString();
       result.push({
         key: bookings[i].ID,
-        name: bookings[i].Title,
+        fullName: bookings[i].fullName,
         value: bookings[i].ID,
         status: bookings[i].status,
         IDOV: date,
@@ -61,7 +67,8 @@ export const getBookings = async (listName) => {
   let user = await sp.web.currentUser();
   const allItems: any[] = await sp.web.lists
     .getByTitle(listName)
-    .items.select("Title", "Id", "IDOV", "status")
+    .items
+    .select("fullName", "Id", "IDOV", "status")
     .filter("AuthorId eq '" + user.Id + "'")
     .getAll();
   return formatBooking(allItems);
@@ -170,4 +177,25 @@ export const getLatestActiveIDOV = (bookings) => {
   if (countActive == 1) {
     return date;
   }
+};
+
+export const getBookingsFromDate = async (listName, date) => {
+  const allItems: any[] = await sp.web.lists
+    .getByTitle(listName)
+    .items.filter(
+      "IDOV eq '" +
+        formatISO(date, { representation: "date" }) +
+        "' and status eq 'Active'"
+    )
+    .getAll();
+  return allItems;
+};
+
+export const getWhomBookedFromDate = async (listName, date) => {
+  const bookings = await getBookingsFromDate(listName, date);
+  let nameList = [];
+  for (let i = 0; i < bookings.length; i++) {
+    nameList.push(bookings[i].fullName);
+  }
+  return nameList;
 };

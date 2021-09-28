@@ -7,72 +7,28 @@ import {
   IDropdownStyles,
   TextField,
   PrimaryButton,
+  Label,
 } from "office-ui-fabric-react/lib";
-import { Calendar } from "office-ui-fabric-react/lib/Calendar";
-import { Label } from "office-ui-fabric-react/lib/Label";
+import DayPicker from "react-day-picker";
+import "react-day-picker/lib/style.css";
 import { sp } from "@pnp/sp";
 import { addDays } from "date-fns";
-
-const DayPickerStrings = {
-  months: [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ],
-
-  shortMonths: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ],
-
-  days: [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ],
-
-  shortDays: ["S", "M", "T", "W", "T", "F", "S"],
-
-  goToToday: "Go to today",
-  weekNumberFormatString: "Week number {0}",
-};
+import { debounce } from "@microsoft/sp-lodash-subset";
 
 export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   let myFormRef;
+  const defaultDisableDates = {
+    after: addDays(new Date(), 91),
+    before: addDays(new Date(), 14),
+  };
   const [status, setStatus] = useState("ready");
-  const [isInvalid, setIsInvalid] = useState(true);
   const [fullName, setFullName] = useState("");
   const [division, setDivision] = useState(null);
   const [department, setDepartment] = useState(null);
   const [IDOV, setIDOV] = useState(addDays(new Date(), 13));
   const [divisionList, setDivisionList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
-  const [fullyBookedDate, setFullyBookedDate] = useState([]);
-  const [daysFromActiveBookings, setDaysFromActiveBookings] = useState([]);
-  const [disableDate, setDisableDate] = useState([]);
+  const [disableDate, setDisableDate] = useState([defaultDisableDates]);
   const dropdownStyles: Partial<IDropdownStyles> = {
     dropdownItemsWrapper: { maxHeight: "300px" },
   };
@@ -107,13 +63,12 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
         setDepartmentList(App.formatDropList(depResult));
         await App.getFullyBookedDates(props.siteDetails.GbtbListName).then(
           (dateList) => {
-            setFullyBookedDate(dateList);
             const dBFAB = App.datesBlockFromActiveBooking(
               props.activeBookingDate
             );
-            setDaysFromActiveBookings(dBFAB);
             const disDate = [...dateList, ...dBFAB];
-            setDisableDate(disDate);
+            const newDisDate = [...disDate, defaultDisableDates];
+            setDisableDate(newDisDate);
           }
         );
         setStatus("ready");
@@ -150,6 +105,31 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
         alert("Form submitted failed.");
       }
     );
+  };
+  const [bookedDetails, setBookedDetails] = React.useState("");
+  const showWhomBook = async (date) => {
+    const nameList = await App.getWhomBookedFromDate(
+      props.siteDetails.GbtbListName,
+      date
+    );
+    if (nameList.length == 1){
+      setBookedDetails(nameList[0] + " has booked this date.");
+    } else if (nameList.length == 2){
+      setBookedDetails(nameList[0] + " and "+ nameList[1] + " have booked this date.");
+    }
+  };
+
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  const debouncedHandleMouseEnter = debounce((date) => {
+    setIsHovered(true);
+    showWhomBook(date);
+  }, 1200);
+
+  const handlOnMouseLeave = () => {
+    setIsHovered(false);
+    setBookedDetails("");
+    debouncedHandleMouseEnter.cancel();
   };
 
   return (
@@ -204,16 +184,15 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
             <label>
               <Label required>Intended Date of Visit</Label>
               <div className={styles.errMsg}>{errMsg}</div>
-              <Calendar
-                onSelectDate={(selectedDate) => _setIDOV(selectedDate)}
-                isMonthPickerVisible={true}
-                showGoToToday={false}
-                value={IDOV}
-                strings={DayPickerStrings}
-                highlightSelectedMonth={true}
-                minDate={addDays(new Date(), 14)}
-                maxDate={addDays(new Date(), 91)}
-                restrictedDates={disableDate}
+              <div>{isHovered && bookedDetails}</div>
+              <DayPicker
+                selectedDays={IDOV}
+                onDayClick={(selectedDate) => _setIDOV(selectedDate)}
+                disabledDays={disableDate}
+                onDayMouseEnter={(date) => debouncedHandleMouseEnter(date)}
+                onDayMouseLeave={handlOnMouseLeave}
+                numberOfMonths={2}
+                pagedNavigation
               />
             </label>
           </div>
