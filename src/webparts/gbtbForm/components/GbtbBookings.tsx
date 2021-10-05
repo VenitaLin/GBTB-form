@@ -15,22 +15,33 @@ import {
   ITooltipHostStyles,
   Stack,
   IStackStyles,
+  IColumn,
 } from "office-ui-fabric-react/lib/";
 import { GbtbForm } from "./GbtbForm";
 import * as App from "./GbtbFormApp";
+import { orderBy, cloneDeep } from "lodash";
 
 export const Bookings = ({
   updateCancelBooking,
   updateNewBooking,
+  sortBookings,
   ...props
 }) => {
   const [msg, setMsg] = useState("");
+  // const [bookings, setBookings] = useState(props.bookings);
   const [isCancelBtnDisabled, setIsCancelBtnDisabled] = useState(true);
   const [isModalOpen, { setTrue: showModal, setFalse: hideModal }] =
     useBoolean(false);
   const [selectedItem, setSelectedItem] = useState<Object | undefined>(
     undefined
   );
+  const addIcon: IIconProps = { iconName: "Add" };
+  const cancelBookingIcon: IIconProps = { iconName: "Delete" };
+  const cancelIcon: IIconProps = { iconName: "Cancel" };
+  const calloutProps = { gapSpace: 0 };
+  const hostStyles: Partial<ITooltipHostStyles> = {
+    root: { display: "inline-block" },
+  };
   const cancelBooking = async () => {
     await App.cancelBooking(
       selectedItem[0].key,
@@ -44,7 +55,7 @@ export const Bookings = ({
       setSelectedItem(selection.getSelection());
     },
   });
-
+  const stackStyles: Partial<IStackStyles> = { root: { height: 44 } };
   const theme = getTheme();
   const iconButtonStyles = {
     root: {
@@ -57,7 +68,40 @@ export const Bookings = ({
       color: theme.palette.neutralDark,
     },
   };
-  const columns = [
+
+  const _onColumnClick = (
+    ev: React.MouseEvent<HTMLElement>,
+    column: IColumn
+  ) => {
+    const newColumns = columns.slice();
+    const currColumn: IColumn = newColumns.filter(
+      (currCol) => column.key === currCol.key
+    )[0];
+
+    newColumns.forEach((newCol: IColumn) => {
+      if (newCol === currColumn) {
+        currColumn.isSortedDescending = !currColumn.isSortedDescending;
+        currColumn.isSorted = true;
+      } else {
+        newCol.isSorted = false;
+        newCol.isSortedDescending = true;
+      }
+    });
+    // const newItems = _copyAndSort(items, currColumn.fieldName!, currColumn.isSortedDescending);
+    // const newItems = orderBy(
+    //   items,
+    //   currColumn.fieldName,
+    //   currColumn.isSortedDescending ? "desc" : "asc"
+    // );
+    // const newItems = _copyAndSort(currColumn);
+    sortBookings(currColumn);
+    setColumns(newColumns);
+    // setBookings(newItems);
+
+    // console.log(newItems);
+  };
+
+  const [columns, setColumns] = useState([
     {
       key: "column1",
       name: "Full Name",
@@ -73,6 +117,9 @@ export const Bookings = ({
       minWidth: 100,
       maxWidth: 200,
       isResizable: false,
+      isSorted: false,
+      isSortedDescending: false,
+      onColumnClick: _onColumnClick,
     },
     {
       key: "column3",
@@ -81,13 +128,17 @@ export const Bookings = ({
       minWidth: 100,
       maxWidth: 200,
       isResizable: false,
+      isSorted: true,
+      isSortedDescending: false,
+      onColumnClick: _onColumnClick,
     },
-  ];
-  const stackStyles: Partial<IStackStyles> = { root: { height: 44 } };
+  ]);
+
   useEffect(() => {
     if (props.status == "loading") {
       setMsg("Loading...");
-    } else if (props.bookings.length == 0) {
+    }
+    if (props.bookings.length < 1) {
       setMsg("No Existing Bookings.");
     }
     if (
@@ -105,14 +156,8 @@ export const Bookings = ({
     } else {
       setIsCancelBtnDisabled(true);
     }
-  }, [selectedItem]);
-  const addIcon: IIconProps = { iconName: "Add" };
-  const cancelBookingIcon: IIconProps = { iconName: "Delete" };
-  const cancelIcon: IIconProps = { iconName: "Cancel" };
-  const calloutProps = { gapSpace: 0 };
-  const hostStyles: Partial<ITooltipHostStyles> = {
-    root: { display: "inline-block" },
-  };
+  }, [props, selectedItem]);
+
   return (
     <div>
       <Stack horizontal styles={stackStyles}>
@@ -145,7 +190,7 @@ export const Bookings = ({
           />
         </TooltipHost>
       </Stack>
-      {props.bookings.length == 0 && (
+      {props.bookings.length < 1 && (
         <div
           style={{
             textAlign: "center",
@@ -156,7 +201,7 @@ export const Bookings = ({
           {msg}
         </div>
       )}
-      {props.bookings.length != 0 && (
+      {props.bookings.length > 0 && (
         <DetailsList
           items={props.bookings}
           compact={false}
