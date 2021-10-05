@@ -18,9 +18,7 @@ import {
   IColumn,
 } from "office-ui-fabric-react/lib/";
 import { GbtbForm } from "./GbtbForm";
-import * as App from "./GbtbFormApp";
-import { orderBy, cloneDeep } from "lodash";
-
+import * as App from "./GbtbApp";
 export const Bookings = ({
   updateCancelBooking,
   updateNewBooking,
@@ -28,7 +26,6 @@ export const Bookings = ({
   ...props
 }) => {
   const [msg, setMsg] = useState("");
-  // const [bookings, setBookings] = useState(props.bookings);
   const [isCancelBtnDisabled, setIsCancelBtnDisabled] = useState(true);
   const [isModalOpen, { setTrue: showModal, setFalse: hideModal }] =
     useBoolean(false);
@@ -68,7 +65,6 @@ export const Bookings = ({
       color: theme.palette.neutralDark,
     },
   };
-
   const _onColumnClick = (
     ev: React.MouseEvent<HTMLElement>,
     column: IColumn
@@ -87,21 +83,10 @@ export const Bookings = ({
         newCol.isSortedDescending = true;
       }
     });
-    // const newItems = _copyAndSort(items, currColumn.fieldName!, currColumn.isSortedDescending);
-    // const newItems = orderBy(
-    //   items,
-    //   currColumn.fieldName,
-    //   currColumn.isSortedDescending ? "desc" : "asc"
-    // );
-    // const newItems = _copyAndSort(currColumn);
-    sortBookings(currColumn);
+    sortBookings(column);
     setColumns(newColumns);
-    // setBookings(newItems);
-
-    // console.log(newItems);
   };
-
-  const [columns, setColumns] = useState([
+  const initialColumns = [
     {
       key: "column1",
       name: "Full Name",
@@ -117,8 +102,6 @@ export const Bookings = ({
       minWidth: 100,
       maxWidth: 200,
       isResizable: false,
-      isSorted: false,
-      isSortedDescending: false,
       onColumnClick: _onColumnClick,
     },
     {
@@ -128,11 +111,12 @@ export const Bookings = ({
       minWidth: 100,
       maxWidth: 200,
       isResizable: false,
-      isSorted: true,
+      isSorted: false,
       isSortedDescending: false,
       onColumnClick: _onColumnClick,
     },
-  ]);
+  ];
+  const [columns, setColumns] = useState(initialColumns);
 
   useEffect(() => {
     if (props.status == "loading") {

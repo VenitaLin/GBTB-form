@@ -1,10 +1,9 @@
 import * as React from "react";
-import * as App from "./GbtbFormApp";
+import * as App from "./GbtbApp";
 import { Bookings } from "./GbtbBookings";
 import { useState, useEffect } from "react";
 import { sp } from "@pnp/sp";
-import { orderBy, cloneDeep } from "lodash";
-
+import { orderBy } from "lodash";
 export const HomePage = (props) => {
   const [bookings, setBookings] = useState([]);
   const [status, setStatus] = useState("");
@@ -15,7 +14,7 @@ export const HomePage = (props) => {
     try {
       setStatus("loading");
       await App.getBookings(props.GbtbListName).then((bookingsList) => {
-        setBookings(orderBy(bookingsList, "status", "asc"));
+        setBookings(bookingsList);
         setIsDisabledNewBookBtn(App.isDisabledNewBookingBtn(bookingsList));
         setActiveBookingDate(App.getLatestActiveIDOV(bookingsList));
         setStatus("ready");
@@ -30,38 +29,35 @@ export const HomePage = (props) => {
   const updateNewBooking = () => {
     fetchData();
   };
-  const sortBookings = (currColumn) => {
+  const onColumnClick = (newCol) => {
+    setCurrColumn(newCol);
+  };
+  const sortBookings = (oriBookings, column) => {
     const sortedBookings = orderBy(
-      bookings,
-      currColumn.fieldName,
-      currColumn.isSortedDescending ? "desc" : "asc"
+      oriBookings,
+      column.fieldName,
+      column.isSortedDescending ? "desc" : "asc"
     );
     return sortedBookings;
-  };
-  const updateColumn = (newCol) => {
-    setCurrColumn(newCol);
   };
   useEffect(() => {
     sp.setup({
       spfxContext: props.context,
     });
     fetchData();
-    const sortedBookings = sortBookings(currColumn);
-    setBookings(sortedBookings);
-  }, [currColumn]);
+  }, [bookings]);
   return (
     <div>
       <Bookings
         updateCancelBooking={updateCancelBooking}
         updateNewBooking={updateNewBooking}
-        bookings={bookings}
+        bookings={sortBookings(bookings, currColumn)}
         status={status}
         siteDetails={props}
         isDisabledNewBookBtn={isDisabledNewBookBtn}
         isFormAvailable={!isDisabledNewBookBtn}
         activeBookingDate={activeBookingDate}
-        sortBookings={sortBookings}
-        updateColumn={updateColumn}
+        sortBookings={onColumnClick}
       />
     </div>
   );

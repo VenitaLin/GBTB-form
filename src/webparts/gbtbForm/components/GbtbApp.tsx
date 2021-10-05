@@ -67,8 +67,7 @@ export const getBookings = async (listName) => {
   let user = await sp.web.currentUser();
   const allItems: any[] = await sp.web.lists
     .getByTitle(listName)
-    .items
-    .select("fullName", "Id", "IDOV", "status")
+    .items.select("fullName", "Id", "IDOV", "status")
     .filter("AuthorId eq '" + user.Id + "'")
     .getAll();
   return formatBooking(allItems);
@@ -87,10 +86,20 @@ export const isDisabledNewBookingBtn = (bookingList) => {
   return false;
 };
 
-export const formatDropList = (data) => {
+export const formatDivList = (data) => {
   var listItems = [];
   for (var k in data) {
     listItems.push({ key: k, text: data[k].Title });
+  }
+  return listItems;
+};
+
+export const formatDepList = (data, div) => {
+  var listItems = [];
+  for (var k in data) {
+    if (data[k].Division == div) {
+      listItems.push({ key: k, text: data[k].Title });
+    }
   }
   return listItems;
 };

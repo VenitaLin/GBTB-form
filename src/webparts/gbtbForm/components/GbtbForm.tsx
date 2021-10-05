@@ -1,15 +1,15 @@
 import * as React from "react";
 import styles from "./GbtbForm.module.scss";
-import * as App from "./GbtbFormApp";
+import * as App from "./GbtbApp";
 import { useState, useEffect } from "react";
 import {
   Dropdown,
   IDropdownStyles,
   TextField,
   PrimaryButton,
-  Calendar
+  Calendar,
+  Label,
 } from "office-ui-fabric-react/lib";
-import { Label } from "office-ui-fabric-react/lib/Label";
 import { sp } from "@pnp/sp";
 import { addDays } from "date-fns";
 
@@ -66,6 +66,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   const [fullName, setFullName] = useState("");
   const [division, setDivision] = useState(null);
   const [department, setDepartment] = useState(null);
+  const [fullDepartment, setFullDepartment] = useState(null);
   const [IDOV, setIDOV] = useState(addDays(new Date(), 13));
   const [divisionList, setDivisionList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
@@ -99,11 +100,11 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
       try {
         setStatus("loading");
         const divResult = await App.getList(props.siteDetails.divisionListName);
-        setDivisionList(App.formatDropList(divResult));
+        setDivisionList(App.formatDivList(divResult));
         const depResult = await App.getList(
           props.siteDetails.departmentListName
         );
-        setDepartmentList(App.formatDropList(depResult));
+        setFullDepartment(depResult);
         await App.getFullyBookedDates(props.siteDetails.GbtbListName).then(
           (dateList) => {
             setFullyBookedDate(dateList);
@@ -135,7 +136,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
     var data = {
       fullName: fullName,
       division: divisionList[division].text,
-      department: departmentList[department].text,
+      department: fullDepartment[department].Title,
       IDOV: IDOV,
       status: "Active",
     };
@@ -178,6 +179,9 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
                 placeholder="Select your division"
                 onChange={(e, selectedOption) => {
                   setDivision(selectedOption.key);
+                  setDepartmentList(
+                    App.formatDepList(fullDepartment, selectedOption.text)
+                  );
                 }}
                 styles={dropdownStyles}
                 required
