@@ -200,11 +200,11 @@ export const getBookingsFromDate = async (listName, date) => {
   return allItems;
 };
 
-export const getWhomBookedFromDate = async (listName, date) => {
-  const bookings = await getBookingsFromDate(listName, date);
-  let nameList = [];
-  for (let i = 0; i < bookings.length; i++) {
-    nameList.push(bookings[i].fullName);
-  }
-  return nameList;
-};
+// export const getWhomBookedFromDate = async (listName, date) => {
+//   const bookings = await getBookingsFromDate(listName, date);
+//   let nameList = [];
+//   for (let i = 0; i < bookings.length; i++) {
+//     nameList.push(bookings[i].fullName);
+//   }
+//   return nameList;
+// };

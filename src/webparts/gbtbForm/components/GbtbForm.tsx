@@ -66,13 +66,13 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   const [fullName, setFullName] = useState("");
   const [division, setDivision] = useState(null);
   const [department, setDepartment] = useState(null);
-  const [fullDepartment, setFullDepartment] = useState(null);
   const [IDOV, setIDOV] = useState(addDays(new Date(), 13));
   const [divisionList, setDivisionList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [fullyBookedDate, setFullyBookedDate] = useState([]);
   const [daysFromActiveBookings, setDaysFromActiveBookings] = useState([]);
   const [disableDate, setDisableDate] = useState([]);
+  const [cardNum, setCardNum] = useState("");
   const dropdownStyles: Partial<IDropdownStyles> = {
     dropdownItemsWrapper: { maxHeight: "300px" },
   };
@@ -104,7 +104,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
         const depResult = await App.getList(
           props.siteDetails.departmentListName
         );
-        setFullDepartment(depResult);
+        setDepartmentList(App.formatDivList(depResult));
         await App.getFullyBookedDates(props.siteDetails.GbtbListName).then(
           (dateList) => {
             setFullyBookedDate(dateList);
@@ -136,9 +136,11 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
     var data = {
       fullName: fullName,
       division: divisionList[division].text,
-      department: fullDepartment[department].Title,
+      department: departmentList[department].text,
       IDOV: IDOV,
       status: "Active",
+      isMailSent: "False",
+      CardNumber: cardNum,
     };
     App.addItem(props.siteDetails.GbtbListName, data).then(
       (value) => {
@@ -179,9 +181,6 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
                 placeholder="Select your division"
                 onChange={(e, selectedOption) => {
                   setDivision(selectedOption.key);
-                  setDepartmentList(
-                    App.formatDepList(fullDepartment, selectedOption.text)
-                  );
                 }}
                 styles={dropdownStyles}
                 required
