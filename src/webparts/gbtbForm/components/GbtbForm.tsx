@@ -11,7 +11,7 @@ import {
   Label,
 } from "office-ui-fabric-react/lib";
 import { sp } from "@pnp/sp";
-import { addDays } from "date-fns";
+import { addDays, isWeekend, nextMonday } from "date-fns";
 
 const DayPickerStrings = {
   months: [
@@ -62,11 +62,14 @@ const DayPickerStrings = {
 
 export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   let myFormRef;
+  const earliestDate = isWeekend(addDays(new Date(), 3))
+    ? nextMonday(addDays(new Date(), 3))
+    : addDays(new Date(), 3);
   const [status, setStatus] = useState("ready");
   const [fullName, setFullName] = useState("");
   const [division, setDivision] = useState(null);
   const [department, setDepartment] = useState(null);
-  const [IDOV, setIDOV] = useState(addDays(new Date(), 13));
+  const [IDOV, setIDOV] = useState(earliestDate);
   const [divisionList, setDivisionList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [fullyBookedDate, setFullyBookedDate] = useState([]);
@@ -129,7 +132,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
     setFullName("");
     setDivision(null);
     setDepartment(null);
-    setIDOV(addDays(new Date(), 13));
+    setIDOV(earliestDate);
   };
 
   const submitForm = () => {
@@ -213,7 +216,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
                 value={IDOV}
                 strings={DayPickerStrings}
                 highlightSelectedMonth={true}
-                minDate={addDays(new Date(), 14)}
+                minDate={earliestDate}
                 maxDate={addDays(new Date(), 91)}
                 restrictedDates={disableDate}
               />
