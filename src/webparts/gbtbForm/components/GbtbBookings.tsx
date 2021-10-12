@@ -44,8 +44,8 @@ export const Bookings = ({
       selectedItem[0].key,
       props.siteDetails.GbtbListName
     );
-    await updateCancelBooking();
     alert("Booking has been cancelled.");
+    await updateCancelBooking();
   };
   const selection = new Selection({
     onSelectionChanged: () => {
@@ -128,13 +128,8 @@ export const Bookings = ({
     if (
       selectedItem &&
       selectedItem[0] &&
-      selectedItem[0].status == "Cancelled"
-    ) {
-      setIsCancelBtnDisabled(true);
-    } else if (
-      selectedItem &&
-      selectedItem[0] &&
-      !App.isWithin2W(selectedItem[0].IDOVdate)
+      selectedItem[0].status != "Cancelled" &&
+      !selectedItem[0].isMailSent
     ) {
       setIsCancelBtnDisabled(false);
     } else {
@@ -160,7 +155,7 @@ export const Bookings = ({
           />
         </TooltipHost>
         <TooltipHost
-          content="Cancel booking is not available if intended date of visit is within 14 days from current date."
+          content="Cancel booking is not available if HR email has been sent."
           calloutProps={calloutProps}
           styles={hostStyles}
           hidden={!isCancelBtnDisabled}

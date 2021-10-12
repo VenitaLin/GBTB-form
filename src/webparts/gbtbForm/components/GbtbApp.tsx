@@ -28,6 +28,7 @@ const setGbtbFormProps = (props) => {
     department: props.department,
     IDOV: props.IDOV,
     status: props.status,
+    isMailSent: props.isMailSent,
   };
   return _spForm;
 };
@@ -57,6 +58,7 @@ const formatBooking = (bookings) => {
         status: bookings[i].status,
         IDOV: date,
         IDOVdate: bookings[i].IDOV,
+        isMailSent: bookings[i].isMailSent == "True" ? true : false,
       });
     }
   }
@@ -67,7 +69,7 @@ export const getBookings = async (listName) => {
   let user = await sp.web.currentUser();
   const allItems: any[] = await sp.web.lists
     .getByTitle(listName)
-    .items.select("fullName", "Id", "IDOV", "status")
+    .items.select("fullName", "Id", "IDOV", "status", "isMailSent")
     .filter("AuthorId eq '" + user.Id + "'")
     .getAll();
   return formatBooking(allItems);
@@ -104,19 +106,9 @@ export const formatDepList = (data, div) => {
   return listItems;
 };
 
-export const isWithin2W = (IDOV) => {
-  var today = new Date();
-  let countDays = differenceInDays(parseISO(IDOV), today);
-  if (countDays <= 14) {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-export const cancelBooking = async (id, ListName) => {
+export const cancelBooking = async (id, listName) => {
   const updatedItem = await sp.web.lists
-    .getByTitle(ListName)
+    .getByTitle(listName)
     .items.getById(id)
     .update({
       status: "Cancelled",
@@ -147,7 +139,7 @@ export const getFullyBookedDates = async (listName) => {
   return resultDates;
 };
 
-export const checkDateAvailable = async (selectedDate, listName) => {
+export const isDateAvailable = async (selectedDate, listName) => {
   const dateList: any[] = await sp.web.lists
     .getByTitle(listName)
     .items.select("IDOV")
@@ -188,14 +180,21 @@ export const getLatestActiveIDOV = (bookings) => {
   }
 };
 
-export const getBookingsFromDate = async (listName, date) => {
+export const getCardNumFromDate = async (listName, date) => {
   const allItems: any[] = await sp.web.lists
     .getByTitle(listName)
-    .items.filter(
+    .items.select("CardNumber")
+    .filter(
       "IDOV eq '" +
         formatISO(date, { representation: "date" }) +
         "' and status eq 'Active'"
     )
     .getAll();
-  return allItems;
+  let count = "One";
+  if (allItems.length >= 2) {
+    count = ""
+  } else if (allItems[0].CardNumber == "One") {
+    count = "Two";
+  }
+  return count
 };
