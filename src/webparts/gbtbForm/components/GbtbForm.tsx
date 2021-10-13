@@ -135,6 +135,10 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   };
 
   const submitForm = async () => {
+    const cardNum = await App.getCardNumFromDate(
+      props.siteDetails.GbtbListName,
+      IDOV
+    );
     var data = {
       fullName: fullName,
       division: divisionList[division].text,
@@ -142,25 +146,18 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
       IDOV: IDOV,
       status: "Active",
       isMailSent: "False",
+      cardNum: cardNum,
     };
-    const cardNum = await App.getCardNumFromDate(
-      props.siteDetails.GbtbListName,
-      IDOV
+    App.addItem(props.siteDetails.GbtbListName, data).then(
+      (value) => {
+        alert("Form submitted successfully!");
+        hideModal();
+        resetForm();
+      },
+      (reason) => {
+        alert("Form submitted failed.");
+      }
     );
-    if (cardNum != "") {
-      App.addItem(props.siteDetails.GbtbListName, data).then(
-        (value) => {
-          alert("Form submitted successfully!");
-          hideModal();
-          resetForm();
-        },
-        (reason) => {
-          alert("Form submitted failed.");
-        }
-      );
-    }else {
-      alert("Form submitted failed. The selected date has been fully booked.");
-    }
   };
 
   return (

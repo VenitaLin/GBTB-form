@@ -29,6 +29,7 @@ const setGbtbFormProps = (props) => {
     IDOV: props.IDOV,
     status: props.status,
     isMailSent: props.isMailSent,
+    CardNumber: props.cardNum,
   };
   return _spForm;
 };
@@ -183,7 +184,7 @@ export const getLatestActiveIDOV = (bookings) => {
 export const getCardNumFromDate = async (listName, date) => {
   const allItems: any[] = await sp.web.lists
     .getByTitle(listName)
-    .items.select("CardNumber")
+    .items.select("Id", "CardNumber")
     .filter(
       "IDOV eq '" +
         formatISO(date, { representation: "date" }) +
@@ -191,10 +192,10 @@ export const getCardNumFromDate = async (listName, date) => {
     )
     .getAll();
   let count = "One";
-  if (allItems.length >= 2) {
-    count = ""
+  if (allItems.length == 0) {
+    return count;
   } else if (allItems[0].CardNumber == "One") {
     count = "Two";
   }
-  return count
+  return count;
 };
