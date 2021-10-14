@@ -9,12 +9,23 @@ export const HomePage = (props) => {
   const [status, setStatus] = useState("");
   const [isDisabledNewBookBtn, setIsDisabledNewBookBtn] = useState(false);
   const [activeBookingDate, setActiveBookingDate] = useState(null);
-  const [currColumn, setCurrColumn] = useState("status");
+  const [currColumn, setCurrColumn] = useState([
+    {
+      key: "column2",
+      name: "Intended Date of Visit",
+      fieldName: "IDOV",
+      minWidth: 100,
+      maxWidth: 200,
+      isResizable: false,
+      isSorted: true,
+      isSortedDescending: true,
+    },
+  ]);
   const fetchData = async () => {
     try {
       setStatus("loading");
       await App.getBookings(props.GbtbListName).then((bookingsList) => {
-        setBookings(bookingsList);
+        setBookings(bookings);
         setIsDisabledNewBookBtn(App.isDisabledNewBookingBtn(bookingsList));
         setActiveBookingDate(App.getLatestActiveIDOV(bookingsList));
         setStatus("ready");

@@ -94,6 +94,8 @@ export const Bookings = ({
       minWidth: 100,
       maxWidth: 200,
       isResizable: false,
+      isSorted: false,
+      isSortedDescending: false,
     },
     {
       key: "column2",
@@ -102,6 +104,8 @@ export const Bookings = ({
       minWidth: 100,
       maxWidth: 200,
       isResizable: false,
+      isSorted: true,
+      isSortedDescending: true,
       onColumnClick: _onColumnClick,
     },
     {
@@ -111,9 +115,9 @@ export const Bookings = ({
       minWidth: 100,
       maxWidth: 200,
       isResizable: false,
+      onColumnClick: _onColumnClick,
       isSorted: false,
       isSortedDescending: false,
-      onColumnClick: _onColumnClick,
     },
   ];
   const [columns, setColumns] = useState(initialColumns);
@@ -155,7 +159,7 @@ export const Bookings = ({
           />
         </TooltipHost>
         <TooltipHost
-          content="Cancel booking is not available if corporate letter has been sent."
+          content="Cancellation of booking is not allowed when Corporate Letter has been received."
           calloutProps={calloutProps}
           styles={hostStyles}
           hidden={!isCancelBtnDisabled}

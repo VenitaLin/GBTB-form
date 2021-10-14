@@ -11,7 +11,7 @@ import {
   Label,
 } from "office-ui-fabric-react/lib";
 import { sp } from "@pnp/sp";
-import { addDays, isWeekend, nextMonday } from "date-fns";
+import { addDays, isSaturday, isWeekend, nextMonday, nextTuesday } from "date-fns";
 
 const DayPickerStrings = {
   months: [
@@ -62,9 +62,7 @@ const DayPickerStrings = {
 
 export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   let myFormRef;
-  const earliestDate = isWeekend(addDays(new Date(), 3))
-    ? nextMonday(addDays(new Date(), 3))
-    : addDays(new Date(), 3);
+  const earliestDate = addDays(new Date(), 3);
   const [status, setStatus] = useState("ready");
   const [fullName, setFullName] = useState("");
   const [division, setDivision] = useState(null);
