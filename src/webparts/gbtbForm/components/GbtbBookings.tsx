@@ -94,8 +94,6 @@ export const Bookings = ({
       minWidth: 100,
       maxWidth: 200,
       isResizable: false,
-      isSorted: false,
-      isSortedDescending: false,
     },
     {
       key: "column2",
@@ -105,7 +103,7 @@ export const Bookings = ({
       maxWidth: 200,
       isResizable: false,
       isSorted: true,
-      isSortedDescending: true,
+      isSortedDescending: false,
       onColumnClick: _onColumnClick,
     },
     {
@@ -116,8 +114,6 @@ export const Bookings = ({
       maxWidth: 200,
       isResizable: false,
       onColumnClick: _onColumnClick,
-      isSorted: false,
-      isSortedDescending: false,
     },
   ];
   const [columns, setColumns] = useState(initialColumns);
