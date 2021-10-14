@@ -25,7 +25,7 @@ export const HomePage = (props) => {
     try {
       setStatus("loading");
       await App.getBookings(props.GbtbListName).then((bookingsList) => {
-        setBookings(orderBy(bookingsList, "IDOV", "desc"))
+        setBookings(orderBy(bookingsList, "IDOV", "desc"));
         setIsDisabledNewBookBtn(App.isDisabledNewBookingBtn(bookingsList));
         setActiveBookingDate(App.getLatestActiveIDOV(bookingsList));
         setStatus("ready");
