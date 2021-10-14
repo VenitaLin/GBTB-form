@@ -155,7 +155,7 @@ export const Bookings = ({
           />
         </TooltipHost>
         <TooltipHost
-          content="Cancel booking is not available if HR email has been sent."
+          content="Cancel booking is not available if corporate letter has been sent."
           calloutProps={calloutProps}
           styles={hostStyles}
           hidden={!isCancelBtnDisabled}

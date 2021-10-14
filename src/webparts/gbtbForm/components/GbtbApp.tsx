@@ -5,7 +5,6 @@ import "@pnp/sp/items";
 import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
 import {
-  differenceInDays,
   parseISO,
   addDays,
   subDays,
