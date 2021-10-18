@@ -18,14 +18,15 @@ export const HomePage = (props) => {
       maxWidth: 200,
       isResizable: false,
       isSorted: true,
-      isSortedDescending: true,
+      isSortedDescending: false,
     },
   ]);
   const fetchData = async () => {
     try {
       setStatus("loading");
       await App.getBookings(props.GbtbListName).then((bookingsList) => {
-        setBookings(orderBy(bookingsList, "IDOV", "desc"));
+        console.log("fetch data");
+        setBookings(orderBy(bookingsList, "IDOV", "asc"));
         setIsDisabledNewBookBtn(App.isDisabledNewBookingBtn(bookingsList));
         setActiveBookingDate(App.getLatestActiveIDOV(bookingsList));
         setStatus("ready");
@@ -56,7 +57,7 @@ export const HomePage = (props) => {
       spfxContext: props.context,
     });
     fetchData();
-  }, [bookings]);
+  }, []);
   return (
     <div>
       <Bookings

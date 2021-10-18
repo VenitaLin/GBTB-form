@@ -11,7 +11,7 @@ import {
   Label,
 } from "office-ui-fabric-react/lib";
 import { sp } from "@pnp/sp";
-import { addDays, isSaturday, isWeekend, nextMonday, nextTuesday } from "date-fns";
+import { addDays } from "date-fns";
 
 const DayPickerStrings = {
   months: [
@@ -91,37 +91,35 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
       );
     }
   };
+  const fetchDropdownData = async () => {
+    try {
+      setStatus("loading");
+      const divResult = await App.getList(props.siteDetails.divisionListName);
+      setDivisionList(App.formatDivList(divResult));
+      const depResult = await App.getList(props.siteDetails.departmentListName);
+      setDepartmentList(App.formatDivList(depResult));
+      await App.getFullyBookedDates(props.siteDetails.GbtbListName).then(
+        (dateList) => {
+          console.log("fetch dropdown");
+          setFullyBookedDate(dateList);
+          const dBFAB = App.datesBlockFromActiveBooking(
+            props.activeBookingDate
+          );
+          setDaysFromActiveBookings(dBFAB);
+          const disDate = [...dateList, ...dBFAB];
+          setDisableDate(disDate);
+        }
+      );
+      setStatus("ready");
+    } catch (e) {
+      setStatus("error");
+    }
+  };
   useEffect(() => {
     sp.setup({
       spfxContext: props.siteDetails.context,
     });
-
-    const fetchData = async () => {
-      try {
-        setStatus("loading");
-        const divResult = await App.getList(props.siteDetails.divisionListName);
-        setDivisionList(App.formatDivList(divResult));
-        const depResult = await App.getList(
-          props.siteDetails.departmentListName
-        );
-        setDepartmentList(App.formatDivList(depResult));
-        await App.getFullyBookedDates(props.siteDetails.GbtbListName).then(
-          (dateList) => {
-            setFullyBookedDate(dateList);
-            const dBFAB = App.datesBlockFromActiveBooking(
-              props.activeBookingDate
-            );
-            setDaysFromActiveBookings(dBFAB);
-            const disDate = [...dateList, ...dBFAB];
-            setDisableDate(disDate);
-          }
-        );
-        setStatus("ready");
-      } catch (e) {
-        setStatus("error");
-      }
-    };
-    fetchData();
+    fetchDropdownData();
   }, []);
 
   const resetForm = () => {

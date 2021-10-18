@@ -2,14 +2,8 @@ import { sp } from "@pnp/sp";
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
-import { IItemAddResult } from "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
-import {
-  parseISO,
-  addDays,
-  subDays,
-  formatISO,
-} from "date-fns";
+import { parseISO, addDays, subDays, formatISO } from "date-fns";
 
 export const validateForm = (fullName, division, department, IDOV) => {
   if (!fullName || !division || !department || !IDOV) {
@@ -33,11 +27,29 @@ const setGbtbFormProps = (props) => {
   return _spForm;
 };
 
-export const addItem = async (listName, data) => {
-  let _gbtbFormProps = setGbtbFormProps(data);
-  const iar: IItemAddResult = await sp.web.lists
+export const isDateAvailable = async (selectedDate, listName) => {
+  const dateList: any[] = await sp.web.lists
     .getByTitle(listName)
-    .items.add(_gbtbFormProps);
+    .items.select("IDOV")
+    .filter(
+      "IDOV eq '" + selectedDate.toISOString() + "' and status eq 'Active'"
+    )
+    .getAll();
+  if (dateList.length >= 2) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+export const addItem = async (listName, data) => {
+  let iar;
+  if (isDateAvailable(listName, data.IDOV)){
+    const _gbtbFormProps = setGbtbFormProps(data);
+    iar = await sp.web.lists
+      .getByTitle(listName)
+      .items.add(_gbtbFormProps);
+  }
   return iar;
 };
 
@@ -137,21 +149,6 @@ export const getFullyBookedDates = async (listName) => {
     }
   });
   return resultDates;
-};
-
-export const isDateAvailable = async (selectedDate, listName) => {
-  const dateList: any[] = await sp.web.lists
-    .getByTitle(listName)
-    .items.select("IDOV")
-    .filter(
-      "IDOV eq '" + selectedDate.toISOString() + "' and status eq 'Active'"
-    )
-    .getAll();
-  if (dateList.length >= 2) {
-    return false;
-  } else {
-    return true;
-  }
 };
 
 export const datesBlockFromActiveBooking = (date) => {
