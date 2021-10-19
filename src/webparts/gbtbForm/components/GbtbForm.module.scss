@@ -33,64 +33,10 @@
     @include ms-fontColor-black;
   }
 
-  .button {
-    // Our button
-    text-decoration: none;
-    height: 40px;
-
-    // Primary Button
-    min-width: 80px;
-    background-color: $ms-color-themePrimary;
-    border-color: $ms-color-themePrimary;
-    color: $ms-color-white;
-
-    // Basic Button
-    outline: transparent;
-    position: relative;
-    font-family: "Segoe UI WestEuropean", "Segoe UI", -apple-system,
-      BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    font-size: $ms-font-size-m;
-    font-weight: $ms-font-weight-regular;
-    border-width: 0;
-    text-align: center;
-    cursor: pointer;
-    display: inline-block;
-    padding: 0 16px;
-  }
-
-  input,
-  select {
-    text-decoration: none;
-    // height: 40px;
-    background-color: $ms-color-white;
-    color: $ms-color-black;
-    position: relative;
-    font-family: "Segoe UI WestEuropean", "Segoe UI", -apple-system,
-      BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    font-size: $ms-font-size-m;
-    font-weight: $ms-font-weight-regular;
-    border-width: 1px;
-    border-color: #666;
-    display: inline-block;
-    padding: 0 8px;
-    // border-radius: 3px;
-  }
-
-  .label {
-    font-weight: $ms-font-weight-semibold;
-    font-size: $ms-font-size-m;
-    height: 32px;
-    line-height: 32px;
-    margin: 0 4px;
-    vertical-align: top;
-    display: inline-block;
-  }
-
   .item {
     position: relative;
     margin: 10px 0;
+    width: -webkit-fill-available;
   }
 
   @media (min-width: 568px) {
@@ -102,21 +48,6 @@
     }
     .buttonItem button {
       width: calc(50% - 20px);
-    }
-
-    select,
-    input {
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      box-sizing: border-box;
-      width: 100%;
-      outline: none;
-      font-family: "Segoe UI WestEuropean", "Segoe UI", -apple-system,
-        BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
-      -webkit-font-smoothing: antialiased;
-      font-size: $ms-font-size-m;
-      color: #666;
-      line-height: 22px;
     }
   }
 }

@@ -4,6 +4,7 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import "@pnp/sp/site-users/web";
 import { parseISO, addDays, subDays, formatISO } from "date-fns";
+import { orderBy } from "lodash";
 
 export const validateForm = (fullName, division, department, IDOV) => {
   if (!fullName || !division || !department || !IDOV) {
@@ -44,11 +45,9 @@ export const isDateAvailable = async (selectedDate, listName) => {
 
 export const addItem = async (listName, data) => {
   let iar;
-  if (isDateAvailable(listName, data.IDOV)){
+  if (isDateAvailable(data.IDOV, listName)) {
     const _gbtbFormProps = setGbtbFormProps(data);
-    iar = await sp.web.lists
-      .getByTitle(listName)
-      .items.add(_gbtbFormProps);
+    iar = await sp.web.lists.getByTitle(listName).items.add(_gbtbFormProps);
   }
   return iar;
 };
@@ -102,8 +101,9 @@ export const isDisabledNewBookingBtn = (bookingList) => {
 
 export const formatDivList = (data) => {
   var listItems = [];
-  for (var k in data) {
-    listItems.push({ key: k, text: data[k].Title });
+  const sortedData = orderBy(data, "Title", "asc");
+  for (var k in sortedData) {
+    listItems.push({ key: k, text: sortedData[k].Title });
   }
   return listItems;
 };

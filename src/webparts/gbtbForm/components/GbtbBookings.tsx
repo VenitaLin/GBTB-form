@@ -65,7 +65,10 @@ export const Bookings = ({
       color: theme.palette.neutralDark,
     },
   };
-  const _onColumnClick = (ev: React.MouseEvent<HTMLElement>, column: IColumn) => {
+  const _onColumnClick = (
+    ev: React.MouseEvent<HTMLElement>,
+    column: IColumn
+  ) => {
     const newColumns = columns.slice();
     const currColumn: IColumn = newColumns.filter(
       (currCol) => column.key === currCol.key

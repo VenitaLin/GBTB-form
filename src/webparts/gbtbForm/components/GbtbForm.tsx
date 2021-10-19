@@ -4,11 +4,11 @@ import * as App from "./GbtbApp";
 import { useState, useEffect } from "react";
 import {
   Dropdown,
-  IDropdownStyles,
   TextField,
   PrimaryButton,
   Calendar,
   Label,
+  IDropdown,
 } from "office-ui-fabric-react/lib";
 import { sp } from "@pnp/sp";
 import { addDays } from "date-fns";
@@ -73,9 +73,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   const [fullyBookedDate, setFullyBookedDate] = useState([]);
   const [daysFromActiveBookings, setDaysFromActiveBookings] = useState([]);
   const [disableDate, setDisableDate] = useState([]);
-  const dropdownStyles: Partial<IDropdownStyles> = {
-    dropdownItemsWrapper: { maxHeight: "300px" },
-  };
+  const dropdownRef = React.createRef<IDropdown>();
   const [errMsg, setErrMsg] = useState("");
   const _setIDOV = async (selectedDate) => {
     const isDateAvailable = await App.isDateAvailable(
@@ -100,7 +98,6 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
       setDepartmentList(App.formatDivList(depResult));
       await App.getFullyBookedDates(props.siteDetails.GbtbListName).then(
         (dateList) => {
-          console.log("fetch dropdown");
           setFullyBookedDate(dateList);
           const dBFAB = App.datesBlockFromActiveBooking(
             props.activeBookingDate
@@ -175,19 +172,18 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
             />
           </div>
           <div className={styles.item}>
-            <label>
-              <Dropdown
-                label="Division"
-                options={divisionList}
-                selectedKey={division}
-                placeholder="Select your division"
-                onChange={(e, selectedOption) => {
-                  setDivision(selectedOption.key);
-                }}
-                styles={dropdownStyles}
-                required
-              ></Dropdown>
-            </label>
+            <Dropdown
+              componentRef={dropdownRef}
+              label="Division"
+              options={divisionList}
+              selectedKey={division}
+              placeholder="Select your division"
+              onChange={(e, selectedOption) => {
+                setDivision(selectedOption.key);
+              }}
+              calloutProps={{ calloutMaxHeight: 300 }}
+              required
+            ></Dropdown>
           </div>
           <div className={styles.item}>
             <label>
@@ -199,7 +195,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
                 onChange={(e, selectedOption) => {
                   setDepartment(selectedOption.key);
                 }}
-                styles={dropdownStyles}
+                calloutProps={{ calloutMaxHeight: 300 }}
                 required
               ></Dropdown>
             </label>
