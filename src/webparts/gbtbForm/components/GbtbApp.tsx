@@ -44,12 +44,19 @@ export const isDateAvailable = async (selectedDate, listName) => {
 };
 
 export const addItem = async (listName, data) => {
-  let iar;
   if (isDateAvailable(data.IDOV, listName)) {
     const _gbtbFormProps = setGbtbFormProps(data);
-    iar = await sp.web.lists.getByTitle(listName).items.add(_gbtbFormProps);
+    try {
+      const iar = await sp.web.lists
+        .getByTitle(listName)
+        .items.add(_gbtbFormProps);
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
-  return iar;
+  return false;
 };
 
 export const getList = async (listName) => {

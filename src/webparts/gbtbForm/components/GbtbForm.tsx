@@ -67,7 +67,7 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
   const [fullName, setFullName] = useState("");
   const [division, setDivision] = useState(null);
   const [department, setDepartment] = useState(null);
-  const [IDOV, setIDOV] = useState(earliestDate);
+  const [IDOV, setIDOV] = useState(null);
   const [divisionList, setDivisionList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [fullyBookedDate, setFullyBookedDate] = useState([]);
@@ -143,12 +143,21 @@ export const GbtbForm = ({ updateNewBooking, hideModal, ...props }) => {
     };
     App.addItem(props.siteDetails.GbtbListName, data).then(
       (value) => {
-        alert("Form submitted successfully!");
-        hideModal();
-        resetForm();
+        if (value) {
+          alert("Form submitted successfully!");
+          hideModal();
+          resetForm();
+        } else {
+          alert("Form submitted failed. Please try again.");
+          hideModal();
+          resetForm();
+        }
       },
       (reason) => {
-        alert("Form submitted failed.");
+        console.log(reason);
+        alert("Form submitted failed. Please try again.");
+        hideModal();
+        resetForm();
       }
     );
   };
